@@ -1,0 +1,49 @@
+/**
+ * 自定义字体定义
+ * 
+ * 字体文件位置：src/assets/fonts/
+ * - 字魂151号-联盟综艺体.ttf
+ * - No.77-ShangShouCangShuFaTi-2.ttf
+ */
+
+/**
+ * 字魂151号-联盟综艺体
+ * 用于：标题、按钮等重要文字
+ */
+@font-face {
+  font-family: 'ZiHun151';
+  src: url('../assets/fonts/字魂151号-联盟综艺体.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化字体加载性能 */
+}
+
+/**
+ * No.77-上手仓书法体
+ * 用于：装饰性文字、书法风格元素
+ */
+@font-face {
+  font-family: 'ShangShouCangShu';
+  src: url('../assets/fonts/No.77-ShangShouCangShuFaTi-2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap; /* 优化字体加载性能 */
+}
+
+/* ===== 字体使用说明 ===== */
+/*
+  Figma 生成的组件中使用：
+  - font-['zihun151hao-lianmengzongyiti:Regular',sans-serif]
+  
+  这个字体名称会被浏览器映射到 'ZiHun151' 字体（如果系统中有对应字体）
+  为了确保使用自定义字体，建议在组件中使用：
+  - font-['ZiHun151',sans-serif] 或
+  - className="font-zihun" (如果配置了 Tailwind)
+  
+  Tailwind 配置（可选）：
+  在 tailwind.config.js 中已配置：
+  fontFamily: {
+    zihun: ['ZiHun151', 'sans-serif'],
+    shangshou: ['ShangShouCangShu', 'serif'],
+  }
+*/

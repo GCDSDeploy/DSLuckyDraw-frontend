@@ -1,0 +1,10 @@
+@import 'tailwindcss' source(none);
+@source '../**/*.{js,ts,jsx,tsx}';
+
+@import 'tw-animate-css';
+
+/* Tailwind 字体配置 */
+@theme {
+  --font-zihun: 'ZiHun151', sans-serif;
+  --font-shangshou: 'ShangShouCangShu', serif;
+}
