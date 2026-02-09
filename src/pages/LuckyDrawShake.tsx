@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useShakeDetection } from '../hooks/useShakeDetection';
-import { useSignPool } from '../hooks/useSignPool';
 import { mapSignToLuckyDrawResult } from '../utils/signMapper';
+import { drawLucky, isOutOfStock, drawResponseToSign } from '../services/drawApi';
 import LuckyDrawShake from '../imports/LuckyDrawShake';
+
+const OUT_OF_STOCK_MSG = '今日签已抽完，请明日再来';
 
 /**
  * LuckyDrawShake 页面组件（变体2 - Shake 状态）
@@ -22,44 +24,36 @@ import LuckyDrawShake from '../imports/LuckyDrawShake';
  * - 按钮点击触发摇动动画
  * - 签筒容器摇动动画
  * - 按钮抖动动画（旋转 + 缩放）
+ * - 抽签请求：POST /api/draw，动画与签文返回同步
  */
 export default function LuckyDrawShakePage() {
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState(false);
-  
-  // 抽签池管理
-  const { drawSign, isInitialized } = useSignPool();
 
-  // 摇动触发处理函数
+  // 摇动触发处理函数：先播动画，再请求后端 /api/draw，根据结果跳转或提示
   const handleShakeTrigger = () => {
-    // 检查池是否已初始化
-    if (!isInitialized) {
-      console.warn('Sign pool not initialized yet');
-      return;
-    }
-    
-    // 设置动画状态
     setIsAnimating(true);
-    
-    // 动画完成后跳转（等待动画播放完成）
-    setTimeout(() => {
-      // 从抽签池中抽取一个签
-      const sign = drawSign();
-      
-      if (!sign) {
-        console.warn('No sign available in pool');
-        // 如果池为空，可以显示提示或重置池
-        return;
+
+    setTimeout(async () => {
+      try {
+        const data = await drawLucky();
+
+        if (isOutOfStock(data)) {
+          alert(OUT_OF_STOCK_MSG);
+          setIsAnimating(false);
+          return;
+        }
+
+        const sign = drawResponseToSign(data);
+        const result = mapSignToLuckyDrawResult(sign);
+        console.log(`[抽签结果] Sign: ${sign.id} → Result: ${result.title} (${result.level}, id: ${result.id})`);
+        navigate(`/result/${result.id}`);
+      } catch (err) {
+        console.warn('抽签请求失败', err);
+        alert('抽签请求失败，请检查网络或稍后重试');
+        setIsAnimating(false);
       }
-      
-      // 将 Sign 映射到 LuckyDrawResult
-      const result = mapSignToLuckyDrawResult(sign);
-      
-      console.log(`[抽签结果] Sign: ${sign.id} → Result: ${result.title} (${result.level}, id: ${result.id})`);
-      
-      // 跳转到结果页面，传递签文 ID
-      navigate(`/result/${result.id}`);
-    }, 800); // 等待签筒摇动动画完成（0.8秒）
+    }, 800);
   };
 
   // 摇动检测 Hook
