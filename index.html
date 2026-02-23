@@ -2,8 +2,8 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <!-- 允许连接后端与本地开发资源，避免 Chrome DevTools/.well-known 请求被 CSP 拦截 -->
-    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' http://localhost:3000 http://127.0.0.1:3000 https://dsluckydraw-backend-production.up.railway.app;" />
+    <!-- 允许连接后端与本地开发资源，避免 Chrome DevTools/.well-known 请求被 CSP 拦截；*.up.railway.app 支持 Railway 动态部署域名 -->
+    <meta http-equiv="Content-Security-Policy" content="connect-src 'self' http://localhost:3000 http://127.0.0.1:3000 https://*.up.railway.app;" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
     
     <!-- 微信 WebView 兼容性配置 -->
