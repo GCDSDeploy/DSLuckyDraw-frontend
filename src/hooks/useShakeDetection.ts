@@ -69,12 +69,15 @@ export function useShakeDetection({
       return;
     }
 
-    // 请求权限（iOS 13+ 需要）
+    // 请求权限（iOS 13+ 需要；且必须在用户手势内调用，否则无效）
     if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
+      console.log('[useShakeDetection] iOS: calling DeviceMotionEvent.requestPermission()');
       (DeviceMotionEvent as any)
         .requestPermission()
         .then((permission: string) => {
+          console.log('[useShakeDetection] iOS permission result:', permission);
           if (permission === 'granted') {
+            console.log('[useShakeDetection] iOS permission granted, setting up motion listener');
             setupMotionListener();
           } else {
             console.warn('[useShakeDetection] 设备运动权限被拒绝');
@@ -84,7 +87,7 @@ export function useShakeDetection({
           console.error('[useShakeDetection] 请求设备运动权限失败:', error);
         });
     } else {
-      // Android 或其他浏览器直接设置监听
+      console.log('[useShakeDetection] No requestPermission (non-iOS), setting up listener directly');
       setupMotionListener();
     }
 
@@ -113,6 +116,7 @@ export function useShakeDetection({
 
           // 如果加速度变化超过阈值，触发摇动
           if (totalDelta > threshold) {
+            console.log('MOTION DETECTED');
             lastShakeTime.current = now;
             setIsShaking(true);
             onShake();

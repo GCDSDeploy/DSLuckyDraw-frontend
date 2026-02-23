@@ -1,16 +1,16 @@
 import type { LuckyDrawResult } from '../types';
-// 使用新的命名规范插图（优先 SVG 格式，尺寸 300×255，新年快乐为 340×286）
-import imgDescriptionIllustrationJiedahuanxi from "@/assets/Illustration/SVG/Description_Illustration_皆大欢喜.svg";
-import imgDescriptionIllustrationFuyaozhishang from "@/assets/Illustration/SVG/Description_Illustration_扶摇直上.svg";
-import imgDescriptionIllustrationDazhanhongtu from "@/assets/Illustration/SVG/Description_Illustration_大展鸿图.svg";
-import imgDescriptionIllustrationJinzaihangwo from "@/assets/Illustration/SVG/Description_Illustration_尽在掌握.svg";
-import imgDescriptionIllustrationShenlaizhibi from "@/assets/Illustration/SVG/Description_Illustration_神来之笔.svg";
-import imgDescriptionIllustrationLingguangzhaxian from "@/assets/Illustration/SVG/Description_Illustration_灵光乍现.svg";
-import imgDescriptionIllustrationWenbutuijin from "@/assets/Illustration/SVG/Description_Illustration_稳步推进.svg";
-import imgDescriptionIllustrationYigaoguo from "@/assets/Illustration/SVG/Description_Illustration_一稿过.svg";
-import imgDescriptionIllustrationPaianjiaojue from "@/assets/Illustration/SVG/Description_Illustration_拍案叫绝.svg";
-import imgDescriptionIllustrationTianshidili from "@/assets/Illustration/SVG/Description_Illustration_天时地利.svg";
-import imgDescriptionIllustrationXinniankuaile from "@/assets/Illustration/SVG/Description Illustration_新年快乐.svg";
+// 使用 GIF 插图（尺寸 300×255，新年快乐为 340×286）
+import imgDescriptionIllustrationJiedahuanxi from "@/assets/Illustration/GIF/Description_Illustration_皆大欢喜.gif";
+import imgDescriptionIllustrationFuyaozhishang from "@/assets/Illustration/GIF/Description_Illustration_扶摇直上.gif";
+import imgDescriptionIllustrationDazhanhongtu from "@/assets/Illustration/GIF/Description_Illustration_大展宏图.gif";
+import imgDescriptionIllustrationJinzaihangwo from "@/assets/Illustration/GIF/Description_Illustration_尽在掌握.gif";
+import imgDescriptionIllustrationShenlaizhibi from "@/assets/Illustration/GIF/Description_Illustration_神来之笔.gif";
+import imgDescriptionIllustrationLingguangzhaxian from "@/assets/Illustration/GIF/Description_Illustration_灵光乍现.gif";
+import imgDescriptionIllustrationWenbutuijin from "@/assets/Illustration/GIF/Description_Illustration_稳步推进.gif";
+import imgDescriptionIllustrationYigaoguo from "@/assets/Illustration/GIF/Description_Illustration_一稿过.gif";
+import imgDescriptionIllustrationPaianjiaojue from "@/assets/Illustration/GIF/Description_Illustration_拍案叫绝.gif";
+import imgDescriptionIllustrationTianshidili from "@/assets/Illustration/GIF/Description_Illustration_天时地利.gif";
+import imgDescriptionIllustrationXinniankuaile from "@/assets/Illustration/GIF/Description_Illustration_新年快乐.gif";
 
 /**
  * 签文静态数据集合（共 11 个签文）

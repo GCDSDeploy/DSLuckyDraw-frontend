@@ -7,14 +7,24 @@
 import svgPaths from '../imports/svg-38h7dm4h63';
 import type { LuckyDrawResult } from '../types';
 
-// ===== 迁移提示 =====
-// SVG 路径导入：
-// - 当前使用相对路径 '../imports/svg-38h7dm4h63'
-// - Cursor 迁移时需要：
-//   1. 将 SVG 路径数据提取到独立文件（如 @/assets/svgPaths.ts）
-//   2. 或转换为独立的 .svg 文件并使用 @/assets/fortuneSlip.svg
-//   3. 更新导入路径为绝对路径（使用 @ 别名）
-// ====================
+/** 设为 false 可回滚为旧签条 SVG（path 引用），见 LuckyDrawResult_11signs.backup.tsx */
+const USE_NEW_FORTUNE_SLIP_SVG = true;
+const FORTUNE_SLIP_ASSET_BASE = '/assets/fortune-slips';
+
+/** result.id → 新素材文件名（不含扩展名），与 luckyDrawResults 一一对应 */
+const FORTUNE_SLIP_ID_TO_FILENAME: Record<number, string> = {
+  1: 'FortuneSlip_jiedahuanxi',
+  2: 'FortuneSlip_fuyaozhishang',
+  3: 'FortuneSlip_shenlaizhibi',
+  4: 'FortuneSlip_lingguangzhaxian',
+  5: 'FortuneSlip_jinzaihangwo',
+  6: 'FortuneSlip_wenbutuijin',
+  7: 'FortuneSlip_yigaoguo',
+  8: 'FortuneSlip_paianjiaojue',
+  9: 'FortuneSlip_tianshidili',
+  10: 'FortuneSlip_dazhanhongtu',
+  11: 'FortuneSlip_xinniankuaile',
+};
 
 interface FortuneSlipProps {
   /** 签文数据 */
@@ -65,36 +75,47 @@ interface FortuneSlipProps {
  * }} />
  */
 export default function FortuneSlip({ result, className = '' }: FortuneSlipProps) {
-  // 判断是否为特殊签（再抽一次）
   const isRetry = result.isRetry === true;
-  
-  // 动态计算等级文字的水平内边距（根据文字长度调整）
   const levelPaddingX = result.level === '上上签' ? '24.14%' : '32.76%';
-  
+
+  const useNewSlip = USE_NEW_FORTUNE_SLIP_SVG && FORTUNE_SLIP_ID_TO_FILENAME[result.id];
+  const newSlipSrc = useNewSlip
+    ? `${FORTUNE_SLIP_ASSET_BASE}/${FORTUNE_SLIP_ID_TO_FILENAME[result.id]}.svg`
+    : null;
+
   return (
-    <div 
-      className={`absolute contents inset-0 ${className}`} 
+    <div
+      className={`absolute contents inset-0 ${className}`}
       data-name="FortuneSlip"
       data-fortune-id={result.id}
       data-fortune-type={isRetry ? 'retry' : 'normal'}
     >
-      {/* ===== 签条背景（米黄色底 + 棕色边框）===== */}
+      {/* ===== 签条背景：新素材为整张 SVG 图，旧为 path 拼装 ===== */}
       <div className="absolute inset-[-0.09%_-0.36%]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 117 455">
-          <path 
-            d={svgPaths.p1c23ab70} 
-            fill="var(--fill-0, #F7E3BE)" 
-            id="Vector" 
-            stroke="var(--stroke-0, #AF8446)" 
-            strokeMiterlimit="10" 
-            strokeWidth="0.825928" 
+        {newSlipSrc ? (
+          <img
+            src={newSlipSrc}
+            alt=""
+            className="block size-full w-full h-full object-contain object-center"
+            role="presentation"
           />
-        </svg>
+        ) : (
+          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 117 455">
+            <path
+              d={svgPaths.p1c23ab70}
+              fill="var(--fill-0, #F7E3BE)"
+              id="Vector"
+              stroke="var(--stroke-0, #AF8446)"
+              strokeMiterlimit="10"
+              strokeWidth="0.825928"
+            />
+          </svg>
+        )}
       </div>
 
-      {/* ===== 等级文字（上签/上上签/特签）===== */}
-      <p 
-        className={`absolute font-['ZiHun151',sans-serif] leading-[normal] not-italic text-[#c1995f] text-[20px] text-center text-nowrap`}
+      {/* ===== 以下为旧叠加层：使用新素材时隐藏，保留 DOM 以便回滚 ===== */}
+      <p
+        className={`absolute font-['ZiHun151',sans-serif] leading-[normal] not-italic text-[#c1995f] text-[20px] text-center text-nowrap ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}
         style={{
           top: '31.5%',
           bottom: '63.22%',
@@ -105,55 +126,46 @@ export default function FortuneSlip({ result, className = '' }: FortuneSlipProps
         {result.level}
       </p>
 
-      {/* ===== 签号区域装饰边框 ===== */}
-      <div className="absolute inset-[1.55%_7.14%_1.64%_6.87%]" data-name="Vector">
+      <div className={`absolute inset-[1.55%_7.14%_1.64%_6.87%] ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`} data-name="Vector">
         <div className="absolute inset-[-0.09%_-0.42%]">
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 101 441">
-            <path 
-              d={svgPaths.p3fd10800} 
-              id="Vector" 
-              stroke="var(--stroke-0, #AF8446)" 
-              strokeMiterlimit="10" 
-              strokeWidth="0.825928" 
+            <path
+              d={svgPaths.p3fd10800}
+              id="Vector"
+              stroke="var(--stroke-0, #AF8446)"
+              strokeMiterlimit="10"
+              strokeWidth="0.825928"
             />
           </svg>
         </div>
       </div>
 
-      {/* ===== 签号区域背景（深米色圆形）===== */}
-      <div className="absolute inset-[12.78%_15.52%_69.38%_15.52%]" data-name="Vector">
+      <div className={`absolute inset-[12.78%_15.52%_69.38%_15.52%] ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`} data-name="Vector">
         <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 80 81">
           <path d={svgPaths.p2fca3180} fill="var(--fill-0, #C1995F)" id="Vector" />
         </svg>
       </div>
 
-      {/* ===== 签号数字 ===== */}
-      <p className={`absolute font-['ZiHun151',sans-serif] inset-[16.08%_27.59%_72.25%_27.59%] leading-[normal] not-italic text-[#f7e3be] ${result.number === "2026" ? 'text-[28px]' : 'text-[44px]'} text-center text-nowrap`}>
+      <p className={`absolute font-['ZiHun151',sans-serif] inset-[16.08%_27.59%_72.25%_27.59%] leading-[normal] not-italic text-[#f7e3be] ${result.number === "2026" ? 'text-[28px]' : 'text-[44px]'} text-center text-nowrap ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}>
         {result.number}
       </p>
 
-      {/* ===== "No." 前缀（仅正常签显示）===== */}
       {!isRetry && (
-        <p className="absolute font-['ZiHun151',sans-serif] inset-[13.88%_37.07%_81.94%_41.38%] leading-[normal] not-italic text-[#f7e3be] text-[16px] text-nowrap">
+        <p className={`absolute font-['ZiHun151',sans-serif] inset-[13.88%_37.07%_81.94%_41.38%] leading-[normal] not-italic text-[#f7e3be] text-[16px] text-nowrap ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}>
           No.
         </p>
       )}
 
-      {/* ===== 签文内容区域 ===== */}
       {isRetry ? (
-        // 特殊签文：副标题 + 主文案（垂直排列）
         <>
-          {/* 副标题（如"新年快乐"）*/}
           {result.subtitle && (
-            <div className="absolute flex flex-col font-['ZiHun151',sans-serif] inset-[38%_31.03%_52%_31.03%] justify-center leading-[0] not-italic text-[#8e6e44] text-[28px] text-center">
+            <div className={`absolute flex flex-col font-['ZiHun151',sans-serif] inset-[38%_31.03%_52%_31.03%] justify-center leading-[0] not-italic text-[#8e6e44] text-[28px] text-center ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}>
               <p className="leading-[normal]">{result.subtitle}</p>
             </div>
           )}
-          
-          {/* 主文案（垂直排列，如"再试试手气"）*/}
           {result.retryText && (
-            <div 
-              className="absolute flex flex-col font-['ZiHun151',sans-serif] inset-[54%_40%_18%_40%] justify-center items-center leading-[1.8] not-italic text-[#8e6e44] text-[24px] text-center"
+            <div
+              className={`absolute flex flex-col font-['ZiHun151',sans-serif] inset-[54%_40%_18%_40%] justify-center items-center leading-[1.8] not-italic text-[#8e6e44] text-[24px] text-center ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}
               style={{ writingMode: 'vertical-rl' }}
             >
               <p className="leading-[1.8]">{result.retryText}</p>
@@ -161,8 +173,7 @@ export default function FortuneSlip({ result, className = '' }: FortuneSlipProps
           )}
         </>
       ) : (
-        // 正常签文：签文名称（水平居中）
-        <div className="absolute flex flex-col font-['ZiHun151',sans-serif] inset-[44.27%_31.03%_9.03%_31.03%] justify-center leading-[0] not-italic text-[#8e6e44] text-[44px] text-center">
+        <div className={`absolute flex flex-col font-['ZiHun151',sans-serif] inset-[44.27%_31.03%_9.03%_31.03%] justify-center leading-[0] not-italic text-[#8e6e44] text-[44px] text-center ${useNewSlip ? 'opacity-0 pointer-events-none' : ''}`}>
           <p className="leading-[normal]">{result.title}</p>
         </div>
       )}

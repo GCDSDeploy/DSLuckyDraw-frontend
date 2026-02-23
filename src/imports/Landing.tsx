@@ -42,10 +42,15 @@
 //    迁移后确保 /assets/fonts/ 中的字体文件已正确加载
 // ==================================
 
+import { useState } from "react";
 import svgPaths from "./svg-eunazgei67";
 import clsx from "clsx";
-import imgStuckAtHomeStanding from "@/assets/cf7166fb13d3d295ab8f9c7c974f5fc8402be6d5.png";
+import imgStuckAtHomeStanding from "@/assets/Landing_FunkyBCG.gif";
 import imgHandsCheckmark from "@/assets/39f18a03ce34fe99b872a9f4a54f65dd49c8e0d9.png";
+import imgLandingCloud from "@/assets/Landing_Cloud.svg";
+import imgLandingCloudElementSmall from "@/assets/Landing_CloudElement_Small.svg";
+import imgLandingDraw from "@/assets/Landing_Draw.svg";
+import imgLandingTryCta from "@/assets/Landing_Try_CTA.svg";
 import { imgGroup, imgGroup1, imgGroup2, imgGroup3, imgGroup4, imgGroup5, imgGroup6, imgGroup7, imgGroup8, imgGroup9, imgGroup10, imgGroup11, imgGroup12, imgGroup13, imgGroup14, imgGroup15, imgGroup16, imgGroup17, imgGroup18, imgGroup19, imgGroup20, imgGroup21, imgGroup22, imgGroup23, imgGroup24, imgGroup25, imgGroup26, imgGroup27, imgGroup28, imgGroup29, imgGroup30, imgGroup31, imgGroup32, imgGroup33, imgGroup34, imgGroup35, imgGroup36, imgGroup37, imgGroup38, imgGroup39, imgGroup40, imgGroup41, imgGroup42, imgGroup43, imgGroup44, imgGroup45, imgGroup46, imgGroup47, imgGroup48, imgGroup49, imgGroup50, imgGroup51, imgGroup52, imgGroup53, imgGroup54 } from "./svg-2xvnw";
 
 // ===== TODO(cursor-migration) =====
@@ -2310,7 +2315,7 @@ function CtaRules() {
   return (
     <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-[56px]" data-name="CTA_Rules">
       <div className="flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] min-w-full not-italic relative shrink-0 text-[14px] text-center text-shadow-[0px_0.742px_0.742px_rgba(169,99,99,0.25)] text-white w-[min-content]">
-        <p className="leading-[1.2]">活动规则</p>
+        <p className="leading-[1.2] whitespace-nowrap">活动规则</p>
       </div>
       <div className="h-0 relative shrink-0 w-[56px]">
         <div className="absolute inset-[-1px_0]">
@@ -2325,7 +2330,7 @@ function CtaRules() {
 
 function LandingBottomArea() {
   return (
-    <div className="absolute content-stretch flex items-end justify-between left-[calc(50%+0.5px)] top-[780px] translate-x-[-50%] w-[352px]" data-name="Landing_BottomArea">
+    <div className="absolute content-stretch flex items-end justify-between bottom-0 left-1/2 -translate-x-1/2 w-[352px]" style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))' }} data-name="Landing_BottomArea">
       <DsLogo />
       <CtaRules />
     </div>
@@ -2334,17 +2339,25 @@ function LandingBottomArea() {
 
 type LandingTryCtaProps = {
   onClick?: () => void;
+  isReturnLayout?: boolean;
 };
 
-function LandingTryCta({ onClick }: LandingTryCtaProps = {}) {
+function LandingTryCta({ onClick, isReturnLayout = false }: LandingTryCtaProps = {}) {
   return (
-    <div 
+    <div
       onClick={onClick}
       data-action="start"
-      className="absolute bg-[#ffc994] content-stretch flex items-center justify-center left-[154px] px-[5px] py-[13px] rounded-[100px] top-[674px] w-[80px] cursor-pointer" 
+      className="absolute z-10 content-stretch flex items-center justify-center w-[88px] h-[88px] cursor-pointer"
       data-name="Landing_Try_CTA"
+      style={{
+        left: '50%',
+        top: isReturnLayout ? '571px' : '646px',
+        animation: 'pulseCTA 1.2s ease-in-out infinite',
+        transformOrigin: 'center center',
+      }}
     >
-      <div className="flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#9b5120] text-[24px] text-center text-shadow-[0px_0.742px_0.742px_rgba(169,99,99,0.25)] w-[71px]">
+      <img alt="" className="absolute inset-0 w-full h-full pointer-events-none" src={imgLandingTryCta} aria-hidden />
+      <div className="flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] not-italic relative z-[1] text-[#3F0400] text-[24px] text-center text-shadow-[0px_0.742px_0.742px_rgba(169,99,99,0.25)] w-[71px]">
         <p className="leading-[1.11]">试试手气</p>
       </div>
     </div>
@@ -2353,7 +2366,7 @@ function LandingTryCta({ onClick }: LandingTryCtaProps = {}) {
 
 function LandingHoverGesture() {
   return (
-    <div className="h-[80px] relative w-[71px]" data-name="Landing_HoverGesture">
+    <div className="h-[80px] relative w-[71px] opacity-90" data-name="Landing_HoverGesture" style={{ animation: 'floatGesture 1s ease-in-out infinite', transformOrigin: 'center center', visibility: 'hidden' }}>
       <div className="absolute inset-[0_-4.45%_0_0]">
         <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 75 80">
           <g id="Landing_HoverGesture">
@@ -2380,12 +2393,16 @@ function LandingHoverGesture() {
   );
 }
 
-function LandingDescription() {
+function LandingDescription({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
-    <div className="absolute content-stretch flex items-center justify-center left-1/2 p-[20px] top-[576px] translate-x-[-50%]" data-name="Landing_Description">
+    <div
+      className="absolute content-stretch flex items-center justify-center left-1/2 p-[10px] translate-x-[-50%]"
+      style={{ top: isReturnLayout ? '486px' : '561px' }}
+      data-name="Landing_Description"
+    >
       <div className="font-['ZiHun151',sans-serif] leading-[1.6] not-italic relative shrink-0 text-[#fff9ee] text-[0px] text-center text-nowrap">
         <p className="mb-0 text-[24px]">摇好签，拿好礼</p>
-        <p className="text-[14px]">DS祝你好运+++</p>
+        <p className="text-[14px]">DS祝你新年行好运+</p>
       </div>
     </div>
   );
@@ -2396,7 +2413,7 @@ function TitleYear() {
     <div className="absolute content-stretch flex items-center justify-center left-[105px] top-[9px] w-[170px]" data-name="Title_Year">
       <div className="flex h-[126.907px] items-center justify-center relative shrink-0 w-[169.917px]" style={{ "--transform-inner-width": "151.90625", "--transform-inner-height": "99.890625" } as React.CSSProperties}>
         <div className="flex-none rotate-[349.277deg]">
-          <div className="flex flex-col font-['ShangShouCangShu',sans-serif] justify-center leading-[0] not-italic relative text-[#e00d12] text-[83.25px] text-center text-nowrap text-shadow-[0px_2.144px_2.144px_rgba(169,99,99,0.25)] tracking-[-8.325px]">
+          <div className="flex flex-col font-['ShangShouCangShu',sans-serif] justify-center leading-[0] not-italic relative text-[83.25px] text-center text-nowrap text-shadow-[0px_2.144px_2.144px_rgba(169,99,99,0.25)] tracking-[-8.325px] text-[#FFE7AB]">
             <p className="leading-[1.2]">2026</p>
           </div>
         </div>
@@ -2421,9 +2438,19 @@ function TitleTheme() {
   );
 }
 
-function LandingHeader() {
+function LandingHeader({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
-    <div className="absolute content-stretch flex flex-col gap-[9.275px] items-start left-1/2 pb-[13.912px] pt-[9.275px] px-[29.68px] top-[47px] translate-x-[-50%] w-[307px]" data-name="Landing_Header">
+    <div
+      className="w-[307px] text-left content-stretch flex flex-col gap-[9.275px] items-start pb-[13.912px] px-[29.68px]"
+      style={{
+        position: 'absolute',
+        top: isReturnLayout ? '-22px' : '13px',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        paddingTop: 'max(16px, env(safe-area-inset-top, 0px))',
+      }}
+      data-name="Landing_Header"
+    >
       <TitleYear />
       <TitleTheme />
     </div>
@@ -2432,14 +2459,8 @@ function LandingHeader() {
 
 function LandingCloudSvg() {
   return (
-    <div className="h-[53.994px] relative shrink-0 w-[104.023px]" data-name="landing_cloud_svg">
-      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 105 54">
-        <g id="landing_cloud_svg">
-          <path d={svgPaths.p5ac3700} fill="var(--fill-0, #FFF9EE)" id="Vector" />
-          <path d={svgPaths.p660d7f0} fill="var(--fill-0, #F2A638)" id="Vector_2" />
-          <path d={svgPaths.p35995bf0} fill="var(--fill-0, #F2A638)" id="Vector_3" />
-        </g>
-      </svg>
+    <div className="h-[54px] relative shrink-0 w-[104px] scale-x-[-1]" data-name="landing_cloud_svg">
+      <img alt="" className="block size-full object-contain object-center" style={{ animation: 'floatX_cloudRight 8s ease-in-out infinite', transformOrigin: 'center center' }} src={imgLandingCloudElementSmall} />
     </div>
   );
 }
@@ -2454,39 +2475,39 @@ function CloudElement() {
 
 function LandingCloudSvg1() {
   return (
-    <div className="h-[69.554px] relative w-[134px]" data-name="landing_cloud_svg">
-      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 134 70">
-        <g id="landing_cloud_svg">
-          <path d={svgPaths.p2c782800} fill="var(--fill-0, #FFF9EE)" id="Vector" />
-          <path d={svgPaths.p1de98700} fill="var(--fill-0, #F2A638)" id="Vector_2" />
-          <path d={svgPaths.p21738500} fill="var(--fill-0, #F2A638)" id="Vector_3" />
-        </g>
-      </svg>
+    <div className="h-[54px] relative w-[104px]" data-name="landing_cloud_svg" style={{ transform: 'rotate(180deg) scaleY(-1)' }}>
+      <img alt="" className="block size-full object-contain object-center" style={{ animation: 'floatX_cloudLeft 8s ease-in-out infinite', transformOrigin: 'center center' }} src={imgLandingCloudElementSmall} />
     </div>
   );
 }
 
 function LandingCloudElement() {
   return (
-    <Wrapper1 additionalClassNames="mt-[433px] w-[134px]">
+    <Wrapper1 additionalClassNames="mt-[400px] w-[134px] ml-[25px]">
       <LandingCloudSvg1 />
     </Wrapper1>
   );
 }
 
 function LandingDrawSvg() {
+  const [shakeDelay, setShakeDelay] = useState(() => `${4 + Math.random() * 2}s`);
+  const [shakeKey, setShakeKey] = useState(0);
   return (
-    <div className="h-[254.628px] relative w-[76.912px]" data-name="landing_draw_svg">
-      <div className="absolute inset-[-0.1%_-0.32%_-0.1%_-0.31%]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 78 256">
-          <g id="landing_draw_svg">
-            <path d={svgPaths.p20875100} fill="var(--fill-0, #F7E3BE)" id="Vector" stroke="var(--stroke-2, #AF8446)" strokeMiterlimit="10" strokeWidth="0.462147" />
-            <path d={svgPaths.pdf9f880} id="Vector_2" stroke="var(--stroke-0, #AF8446)" strokeMiterlimit="10" strokeWidth="0.462147" />
-            <path d={svgPaths.p28c23600} fill="var(--fill-0, #C1995F)" id="Vector_3" />
-            <path d={svgPaths.p30d9eaf0} fill="var(--fill-0, #F7E3BE)" id="Vector_4" />
-          </g>
-        </svg>
-      </div>
+    <div
+      key={shakeKey}
+      className="h-[254.628px] relative w-[76.912px] flex items-center justify-center"
+      data-name="landing_draw_svg"
+      style={{
+        animation: "shakeDraw 0.6s ease-in-out 1",
+        animationDelay: shakeDelay,
+        transformOrigin: "bottom center",
+      }}
+      onAnimationEnd={() => {
+        setShakeDelay(`${4 + Math.random() * 2}s`);
+        setShakeKey((k) => k + 1);
+      }}
+    >
+      <img alt="" className="block max-h-full max-w-full w-auto h-auto object-contain" src={imgLandingDraw} />
     </div>
   );
 }
@@ -2495,7 +2516,7 @@ function LandingDraw() {
   return (
     <div className="[grid-area:1_/_1] content-stretch flex items-center ml-[49px] mt-[15.48px] relative" data-name="Landing_Draw">
       <Wrapper2 additionalClassNames="h-[265.858px] w-[140.193px]">
-        <div className="flex-none rotate-[345deg]">
+        <div className="flex-none" style={{ transform: 'rotate(-12deg)' }} data-name="landing_draw_svg">
           <LandingDrawSvg />
         </div>
       </Wrapper2>
@@ -2504,18 +2525,24 @@ function LandingDraw() {
 }
 
 function LandingDrawSvg1() {
+  const [shakeDelay, setShakeDelay] = useState(() => `${4 + Math.random() * 2}s`);
+  const [shakeKey, setShakeKey] = useState(0);
   return (
-    <div className="h-[231.918px] relative w-[74.912px]" data-name="landing_draw_svg">
-      <div className="absolute inset-[-0.1%_-0.29%_-0.1%_-0.31%]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 76 233">
-          <g id="landing_draw_svg">
-            <path d={svgPaths.p28254280} fill="var(--fill-0, #F7E3BE)" id="Vector" stroke="var(--stroke-0, #AF8446)" strokeMiterlimit="10" strokeWidth="0.42143" />
-            <path d={svgPaths.pf1c5c00} id="Vector_2" stroke="var(--stroke-0, #AF8446)" strokeMiterlimit="10" strokeWidth="0.42143" />
-            <path d={svgPaths.p3e7fa440} fill="var(--fill-0, #C1995F)" id="Vector_3" />
-            <path d={svgPaths.p12a3bf00} fill="var(--fill-0, #F7E3BE)" id="Vector_4" />
-          </g>
-        </svg>
-      </div>
+    <div
+      key={shakeKey}
+      className="h-[231.918px] relative w-[74.912px] flex items-center justify-center"
+      data-name="landing_draw_svg"
+      style={{
+        animation: "shakeDraw 0.6s ease-in-out 1",
+        animationDelay: shakeDelay,
+        transformOrigin: "bottom center",
+      }}
+      onAnimationEnd={() => {
+        setShakeDelay(`${4 + Math.random() * 2}s`);
+        setShakeKey((k) => k + 1);
+      }}
+    >
+      <img alt="" className="block max-h-full max-w-full w-auto h-auto object-contain" src={imgLandingDraw} />
     </div>
   );
 }
@@ -2524,7 +2551,7 @@ function LandingDraw1() {
   return (
     <div className="[grid-area:1_/_1] content-stretch flex items-center ml-[273px] mt-[50.48px] relative" data-name="Landing_Draw">
       <Wrapper2 additionalClassNames="h-[240.241px] w-[107.275px]">
-        <div className="flex-none rotate-[8.213deg]">
+        <div className="flex-none" style={{ transform: 'rotate(24deg)' }}>
           <LandingDrawSvg1 />
         </div>
       </Wrapper2>
@@ -2534,14 +2561,16 @@ function LandingDraw1() {
 
 function LandingCloudSvg2() {
   return (
-    <div className="h-[207.105px] relative w-[399px]" data-name="landing_cloud_svg">
-      <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 399 208">
-        <g id="landing_cloud_svg">
-          <path d={svgPaths.pc2bbc00} fill="var(--fill-0, #FFF9EE)" id="Vector" />
-          <path d={svgPaths.p2a375780} fill="var(--fill-0, #F2A638)" id="Vector_2" />
-          <path d={svgPaths.p373a5280} fill="var(--fill-0, #F2A638)" id="Vector_3" />
-        </g>
-      </svg>
+    <div className="h-[186.86px] relative w-[360px]" data-name="landing_cloud_svg">
+      <img
+        alt=""
+        className="block size-full object-contain object-center"
+        style={{
+          animation: 'floatX_cloudBig 10s ease-in-out infinite',
+          transformOrigin: 'center center',
+        }}
+        src={imgLandingCloud}
+      />
     </div>
   );
 }
@@ -2557,50 +2586,45 @@ function LandingCloud() {
 function Group40() {
   return (
     <div className="[grid-area:1_/_1] grid-cols-[max-content] grid-rows-[max-content] inline-grid ml-0 mt-0 place-items-start relative">
-      <div className="[grid-area:1_/_1] h-[342.848px] ml-0 mt-0 relative w-[167px]" data-name="Stuck at Home Standing">
+      <div className="[grid-area:1_/_1] absolute left-[141px] top-[6.42px] w-[185.1px] h-[380px] ml-0 mt-0" data-name="Stuck at Home Standing">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <img alt="" className="absolute h-[97.99%] left-[2.9%] max-w-none top-[1.31%] w-[94.98%]" src={imgStuckAtHomeStanding} />
+          <img alt="" className="absolute inset-0 w-full h-full object-contain object-center" src={imgStuckAtHomeStanding} />
         </div>
       </div>
-      <div className="[grid-area:1_/_1] h-[24.331px] ml-[103.96px] mt-[84.05px] relative w-[35.391px]" data-name="Hands Checkmark">
+      <div className="[grid-area:1_/_1] h-[24.331px] ml-[103.96px] mt-[84.05px] relative w-[35.391px] opacity-0 pointer-events-none invisible" data-name="Hands Checkmark" aria-hidden>
         <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-contain pointer-events-none size-full" src={imgHandsCheckmark} />
       </div>
     </div>
   );
 }
 
-function LandingCharacterSvg() {
+function LandingCharacterSvg({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
-    <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-name="Landing_character_svg">
-      <Group40 />
-      <div className="[grid-area:1_/_1] h-[3.151px] ml-[61.97px] mt-[1.5px] relative w-[19.956px]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 20 4">
-          <path d={svgPaths.p12795a00} fill="var(--fill-0, #101010)" id="Vector 22" />
-        </svg>
-      </div>
-      <div className="[grid-area:1_/_1] h-[1.856px] ml-[117.11px] mt-[340.22px] relative w-[9.453px]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 10 2">
-          <path d={svgPaths.p1332c9f0} fill="var(--fill-0, #F4BF0D)" id="Vector 23" />
-        </svg>
-      </div>
-      <div className="[grid-area:1_/_1] h-[1.406px] ml-[56.72px] mt-[340.22px] relative w-[21.006px]">
-        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 21 2">
-          <path d={svgPaths.p3704ea20} fill="var(--fill-0, #E8C72A)" id="Vector 24" />
-        </svg>
-      </div>
+    <div className="shrink-0" data-name="Landing_character_svg">
+      <img
+        alt=""
+        className="fixed z-30 pointer-events-none"
+        style={{
+          left: '0%',
+          top: '10%',
+          transform: isReturnLayout ? 'scale(1.05) translateY(-75px)' : 'scale(1.05)',
+          transformOrigin: 'left top',
+        }}
+        src={imgStuckAtHomeStanding}
+      />
     </div>
   );
 }
 
-function LandingCharacter() {
+function LandingCharacter({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
     <div className="[grid-area:1_/_1] content-stretch flex items-center ml-[152px] mt-0 relative" data-name="landing_Character">
-      <LandingCharacterSvg />
+      <LandingCharacterSvg isReturnLayout={isReturnLayout} />
     </div>
   );
 }
 
-function LandingIllustration() {
+function LandingIllustration({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
     <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-name="Landing Illustration">
       <CloudElement />
@@ -2608,15 +2632,19 @@ function LandingIllustration() {
       <LandingDraw />
       <LandingDraw1 />
       <LandingCloud />
-      <LandingCharacter />
+      <LandingCharacter isReturnLayout={isReturnLayout} />
     </div>
   );
 }
 
-function LandingIllustration1() {
+function LandingIllustration1({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
-    <div className="absolute content-stretch flex items-center left-[-37px] top-[220px]" data-name="Landing Illustration">
-      <LandingIllustration />
+    <div
+      className="absolute content-stretch flex items-center left-[-37px]"
+      style={{ top: isReturnLayout ? '145px' : '220px' }}
+      data-name="Landing Illustration"
+    >
+      <LandingIllustration isReturnLayout={isReturnLayout} />
     </div>
   );
 }
@@ -2627,22 +2655,33 @@ function LandingIllustration1() {
 type LandingProps = {
   onStartClick?: () => void;
   onRulesClick?: () => void;
+  /** 微信 WebView 从下一页返回时为 true，用于上移布局避开底部导航栏 */
+  isReturnLayout?: boolean;
 };
 
-export default function Landing({ onStartClick, onRulesClick }: LandingProps = {}) {
+export default function Landing({ onStartClick, onRulesClick, isReturnLayout = false }: LandingProps = {}) {
   return (
-    <div className="bg-[#9f1518] relative size-full" data-name="Landing">
+    <div className="relative block min-h-dvh min-h-full w-full text-center" data-name="Landing">
       <LandingBackgroundPattern />
       <LandingBottomArea />
-      <LandingTryCta onClick={onStartClick} />
-      <div className="absolute flex h-[84.797px] items-center justify-center left-[201.27px] top-[713.6px] w-[76.452px]" style={{ "--transform-inner-width": "0", "--transform-inner-height": "0" } as React.CSSProperties}>
+      <LandingTryCta onClick={onStartClick} isReturnLayout={isReturnLayout} />
+      <div
+        className="absolute z-20 flex h-[84.797px] items-center justify-center left-[201.27px] w-[76.452px]"
+        style={
+          {
+            "--transform-inner-width": "0",
+            "--transform-inner-height": "0",
+            top: isReturnLayout ? "638.6px" : "713.6px",
+          } as React.CSSProperties
+        }
+      >
         <div className="flex-none rotate-[355.966deg]">
           <LandingHoverGesture />
         </div>
       </div>
-      <LandingDescription />
-      <LandingHeader />
-      <LandingIllustration1 />
+      <LandingDescription isReturnLayout={isReturnLayout} />
+      <LandingHeader isReturnLayout={isReturnLayout} />
+      <LandingIllustration1 isReturnLayout={isReturnLayout} />
     </div>
   );
 }

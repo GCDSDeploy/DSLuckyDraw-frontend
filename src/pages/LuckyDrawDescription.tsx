@@ -123,8 +123,8 @@ export default function LuckyDrawDescription() {
     // TODO: 实现奖池页面跳转
   };
   
-  // 从签文数据中提取背景样式（支持纯色或 CSS 渐变）
-  const backgroundStyle = currentResult?.backgroundColor || '#128f57';
+  // 页面统一使用新背景渐变（与 LuckyDrawDefault / LuckyDrawResult 一致）
+  const backgroundStyle = 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)';
   
   // 如果数据未加载，显示加载状态
   if (!currentResult) {

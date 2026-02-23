@@ -52,7 +52,7 @@ export const router = createBrowserRouter(
   {
     path: '*',
     element: (
-      <div className="w-full min-h-screen flex items-center justify-center bg-[#9f1518]">
+      <div className="w-full min-h-screen flex items-center justify-center" style={{ background: 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)' }}>
         <div className="text-white text-center">
           <h1 className="text-2xl mb-4">页面未找到</h1>
           <a href="/" className="underline">返回首页</a>

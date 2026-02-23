@@ -39,21 +39,11 @@ export default function LuckyDrawResult() {
 
   return (
     // 全屏居中容器 - 确保在各种设备上正确显示
-    <div className="w-full min-h-screen flex justify-center bg-[#9f1518]">
-      {/* ===== 响应式移动端容器 ===== */}
-      {/* 
-        - w-full: 宽度自适应
-        - max-w-[430px]: 最大宽度限制（iPhone 16 Pro Max）
-        - mx-auto: 水平居中
-        - h-screen: 全屏高度
-        - overflow-hidden: 防止内容溢出
-        - relative: 为内部绝对定位元素提供定位上下文
-      */}
-      <div 
+    <div className="w-full min-h-screen flex justify-center" style={{ background: 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)' }}>
+      <div
         className="relative w-full max-w-[430px] mx-auto h-screen overflow-hidden"
         data-page="lucky-draw-result"
       >
-        {/* ===== 数据驱动的 Result 页面组件 ===== */}
         <LuckyDrawResultPage
           resultId={resultId}
           onButtonClick={handleButtonClick}
@@ -242,6 +232,7 @@ export default function LuckyDrawResult() {
     </div>
   );
 }
+
 
 // ===== Cursor 迁移架构总结 =====
 // 

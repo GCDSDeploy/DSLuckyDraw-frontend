@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+const IS_WECHAT_WEBVIEW = typeof navigator !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent);
 import { useShakeDetection } from '../hooks/useShakeDetection';
 import { mapSignToLuckyDrawResult } from '../utils/signMapper';
 import { drawLucky, isOutOfStock, drawResponseToSign } from '../services/drawApi';
@@ -29,6 +31,11 @@ const OUT_OF_STOCK_MSG = '今日签已抽完，请明日再来';
 export default function LuckyDrawShakePage() {
   const navigate = useNavigate();
   const [isAnimating, setIsAnimating] = useState(false);
+  const [isWeChatLayout, setIsWeChatLayout] = useState(false);
+
+  useEffect(() => {
+    if (IS_WECHAT_WEBVIEW) setIsWeChatLayout(true);
+  }, []);
 
   // 摇动触发处理函数：先播动画，再请求后端 /api/draw，根据结果跳转或提示
   const handleShakeTrigger = () => {
@@ -72,25 +79,15 @@ export default function LuckyDrawShakePage() {
   };
 
   return (
-    // 全屏居中容器 - 确保在各种设备上正确显示
-    <div className="w-full min-h-screen flex justify-center bg-[#9f1518]">
-      {/* ===== 响应式移动端容器 ===== */}
-      {/* 
-        - w-full: 宽度自适应
-        - max-w-[430px]: 最大宽度限制（iPhone 16 Pro Max）
-        - mx-auto: 水平居中
-        - h-screen: 全屏高度
-        - overflow-hidden: 防止内容溢出
-        - relative: 为内部绝对定位元素提供定位上下文
-      */}
-      <div 
+    <div className="w-full min-h-screen flex justify-center" style={{ background: 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)' }}>
+      <div
         className="relative w-full max-w-[430px] mx-auto h-screen overflow-hidden"
         data-page="lucky-draw-shake"
       >
-        {/* Figma 生成的 LuckyDrawShake 组件 - 传递事件处理函数和动画状态 */}
-        <LuckyDrawShake 
+        <LuckyDrawShake
           onShakeClick={handleButtonClick}
           isShaking={isShaking || isAnimating}
+          isWeChatLayout={isWeChatLayout}
         />
         
         {/* ===== 动画实现说明 ===== */}

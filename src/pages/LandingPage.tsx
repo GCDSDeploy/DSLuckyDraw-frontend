@@ -7,12 +7,16 @@
 // 4. 考虑将可复用组件移动到 /components/
 // ==================================
 
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Landing from '../imports/Landing';
 
+const IS_WECHAT_WEBVIEW = typeof navigator !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent);
+const LANDING_RETURN_KEY = 'ds_landing_return';
+
 /**
  * Landing 页面组件
- * 
+ *
  * @description
  * 首页展示页面，包含：
  * - 背景装饰层
@@ -20,12 +24,24 @@ import Landing from '../imports/Landing';
  * - "试试手气"CTA 按钮
  * - 底部 Logo 和规则链接
  * - 手势动画提示
+ *
+ * 微信 WebView：从下一页返回时底部导航栏约 85px 会遮挡 CTA，此时启用 isReturnLayout 上移布局。
  */
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [isReturnLayout, setIsReturnLayout] = useState(false);
+
+  useEffect(() => {
+    if (!IS_WECHAT_WEBVIEW) return;
+    if (sessionStorage.getItem(LANDING_RETURN_KEY) === '1') {
+      setIsReturnLayout(true);
+      sessionStorage.removeItem(LANDING_RETURN_KEY);
+    }
+  }, []);
 
   // 点击"试试手气"按钮，跳转到抽签页面
   const handleStartClick = () => {
+    if (IS_WECHAT_WEBVIEW) sessionStorage.setItem(LANDING_RETURN_KEY, '1');
     navigate('/draw');
   };
 
@@ -36,7 +52,7 @@ export default function LandingPage() {
   };
   return (
     // 全屏居中容器 - 确保在各种设备上正确显示
-    <div className="w-full min-h-screen flex justify-center bg-[#9f1518]">
+    <div className="w-full min-h-screen flex justify-center" style={{ background: 'linear-gradient(180deg, #E73535 0%, #FA4776 100%)' }}>
       {/* ===== 响应式移动端容器 ===== */}
       {/* 
         - w-full: 宽度自适应
@@ -45,11 +61,12 @@ export default function LandingPage() {
         - overflow-hidden: 防止内容溢出
         - relative: 为内部绝对定位元素提供定位上下文
       */}
-      <div className="relative w-full max-w-[430px] mx-auto overflow-hidden">
+      <div className="relative w-full max-w-[430px] mx-auto overflow-hidden min-h-dvh min-h-screen">
         {/* Figma 生成的 Landing 组件 - 传递事件处理函数 */}
         <Landing 
           onStartClick={handleStartClick}
           onRulesClick={handleRulesClick}
+          isReturnLayout={isReturnLayout}
         />
         
         {/* ===== TODO(cursor-migration) ===== */}
