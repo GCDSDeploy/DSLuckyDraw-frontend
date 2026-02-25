@@ -43,11 +43,11 @@ export async function drawLucky(): Promise<DrawResponse> {
     });
   } catch (err) {
     const friendly = toDrawErrorMessage(err, url);
-    console.warn('[drawApi]', err);
+    console.warn('[drawApi] fetch failed (CORS/network):', err);
     throw new Error(friendly);
   }
   const data = (await res.json()) as DrawResponse;
-  console.log('draw result:', data);
+  console.log('[drawApi] response status:', res.status, 'body:', data);
   if (!res.ok) {
     const msg = data && typeof data === 'object' && 'error' in data
       ? (data as { error?: string }).error ?? `HTTP ${res.status}`
