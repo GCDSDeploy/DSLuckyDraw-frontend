@@ -5,11 +5,13 @@
 // 数据驱动：使用 LuckyDrawResult 类型
 // =============================================
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from 'sonner';
 import type { LuckyDrawResult } from '../types';
 import { getLuckyDrawResultById, luckyDrawResults } from '../data/luckyDrawResults';
 import DescriptionContent from '../components/DescriptionContent';
+import { captureDescriptionToJpg, getDescriptionJpgFileName } from '../utils/descriptionCapture';
 
 // ===== 迁移提示 =====
 // 本文件使用数据驱动的 DescriptionContent 组件
@@ -81,6 +83,8 @@ export default function LuckyDrawDescription() {
   
   // ===== 状态管理 =====
   const [currentResult, setCurrentResult] = useState<LuckyDrawResult | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const descriptionContainerRef = useRef<HTMLDivElement>(null);
   
   // ===== 数据加载逻辑 =====
   useEffect(() => {
@@ -103,11 +107,36 @@ export default function LuckyDrawDescription() {
     navigate('/');
   };
   
-  // 点击"保存到相册"按钮（占位，后续实现）
-  const handleDownloadClick = () => {
-    if (!currentResult) return;
-    console.log('[Placeholder] Save to album with result:', currentResult);
-    // TODO: 实现保存图片功能（使用 html2canvas）
+  // 点击「保存到相册」：离屏容器渲染 390×660 JPG，仅触发下载，不导航，不声称“已保存至相册”
+  const handleDownloadClick = async () => {
+    if (!currentResult || !descriptionContainerRef.current) return;
+    const id = currentResult.id;
+    if (id === 11) return;
+    if (isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const blob = await captureDescriptionToJpg(descriptionContainerRef.current, id);
+      const fileName = getDescriptionJpgFileName(id);
+
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.rel = 'noopener noreferrer';
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+
+      alert('图片已下载，请保存至相册');
+    } catch (e) {
+      console.error('[Save to album]', e);
+      toast.error('保存失败，请重试');
+    } finally {
+      setIsSaving(false);
+    }
   };
   
   // 点击"邀同事来摇签"按钮（占位，后续实现）
@@ -153,7 +182,12 @@ export default function LuckyDrawDescription() {
         data-result-id={currentResult.id}
       >
         {/* ===== 页面内容：使用 Figma 生成组件 + 数据驱动内容 ===== */}
-        <div className="relative size-full" style={{ background: backgroundStyle }} data-name="LuckyDraw_Description">
+        <div
+          ref={descriptionContainerRef}
+          className="relative size-full"
+          style={{ background: backgroundStyle }}
+          data-name="LuckyDraw_Description"
+        >
           {/* 背景装饰层 */}
           <LandingBackgroundLayerGreen />
           
@@ -162,8 +196,11 @@ export default function LuckyDrawDescription() {
           
           {/* 底部操作按钮 */}
           <DescriptionButtons 
+            resultId={currentResult.id}
+            isSaving={isSaving}
             onDownloadClick={handleDownloadClick}
             onShareClick={handleShareClick}
+            onTryAgainClick={() => navigate('/draw')}
           />
           
           {/* 返回主页按钮 */}
@@ -398,22 +435,34 @@ function LandingBackgroundLayerGreen() {
 // ===== 底部操作按钮组件 =====
 
 interface DescriptionButtonsProps {
+  resultId?: number;
+  isSaving?: boolean;
   onDownloadClick?: () => void;
   onShareClick?: () => void;
+  onTryAgainClick?: () => void;
 }
 
-function DescriptionButtons({ onDownloadClick, onShareClick }: DescriptionButtonsProps) {
+function DescriptionButtons({ resultId, isSaving = false, onDownloadClick, onShareClick, onTryAgainClick }: DescriptionButtonsProps) {
+  const isResult11 = resultId === 11;
+  const firstButtonLabel = isResult11 ? '再试试手气' : '保存到相册';
+  const firstButtonClick = isResult11 ? onTryAgainClick : onDownloadClick;
+  const firstButtonDisabled = !isResult11 && isSaving;
+
   return (
-    <div className="absolute content-stretch flex gap-[16px] items-center left-1/2 bottom-[48px] translate-x-[-50%]" data-name="Description_Buttons">
-      {/* 保存到相册按钮 */}
+    <div
+      className="absolute z-20 content-stretch flex gap-[16px] items-center left-1/2 translate-x-[-50%]"
+      style={{ bottom: 'calc(15px + env(safe-area-inset-bottom, 0px))' }}
+      data-name="Description_Buttons"
+    >
+      {/* 保存到相册 / 再试试手气（结果 11 为「再试试手气」，点击返回 draw 默认页） */}
       <div 
-        onClick={onDownloadClick}
-        data-action="download"
-        className="bg-white h-[48px] rounded-[20px] w-[152px] cursor-pointer hover:bg-gray-50 transition-colors"
+        onClick={firstButtonDisabled ? undefined : firstButtonClick}
+        data-action={isResult11 ? 'try-again' : 'download'}
+        className={`bg-white h-[48px] rounded-[20px] w-[152px] transition-colors ${firstButtonDisabled ? 'cursor-not-allowed opacity-70' : 'cursor-pointer hover:bg-gray-50'}`}
       >
         <div className="flex flex-row items-center justify-center size-full px-[31px] py-[12px]">
           <div className="flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] not-italic relative shrink-0 text-[#212121] text-[18px] text-center text-nowrap">
-            <p className="leading-[normal]">保存到相册</p>
+            <p className="leading-[normal]">{firstButtonLabel}</p>
           </div>
         </div>
       </div>
@@ -445,7 +494,8 @@ function DescriptionBack({ onClick }: DescriptionBackProps) {
     <div 
       onClick={onClick}
       data-action="return"
-      className="absolute h-[27px] left-[16px] top-[45px] w-[96px] cursor-pointer" 
+      className="absolute z-20 h-[27px] left-[16px] w-[96px] cursor-pointer"
+      style={{ top: 'calc(15px + env(safe-area-inset-top, 0px))' }}
       data-name="Description_Back"
     >
       <div className="absolute bottom-[14.81%] flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] left-1/4 not-italic right-0 text-[18px] text-nowrap text-white top-[3.7%]">
@@ -477,7 +527,8 @@ function DescriptionGiftPool({ onClick }: DescriptionGiftPoolProps) {
     <div 
       onClick={onClick}
       data-action="gift-pool"
-      className="absolute h-[80px] right-0 top-[105px] w-[26px] cursor-pointer" 
+      className="absolute h-[80px] right-0 w-[26px] cursor-pointer" 
+      style={{ top: 'calc(15px + env(safe-area-inset-top, 0px))' }}
       data-name="Description_GiftPool"
     >
       <div className="absolute bg-white inset-0 rounded-bl-[8px] rounded-tl-[8px]" />

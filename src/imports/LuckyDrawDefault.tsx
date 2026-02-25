@@ -17,7 +17,7 @@ function useCoinFallConfigs(): CoinFallConfig[] {
 
 function LuckyDrawCloudSvg2({ children }: React.PropsWithChildren<{}>) {
   return (
-    <div className="h-[117px] relative shrink-0 w-[225.407px] -translate-y-[30px]" style={{ animation: 'floatX_cloudBig 10s ease-in-out infinite', transformOrigin: 'center center' }}>
+    <div className="h-[117px] relative shrink-0 w-[225.407px] -translate-y-[5px]" style={{ animation: 'floatX_cloudBig 7.5s ease-in-out infinite', transformOrigin: 'center center' }}>
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 226 117">
         <g id="LuckyDraw_cloud_svg">{children}</g>
       </svg>
@@ -637,7 +637,7 @@ function LuckyDrawQian6() {
   );
 }
 
-function LuckyDrawAllQian() {
+function LuckyDrawAllQian({ motionDetected = false }: { motionDetected?: boolean }) {
   return (
     <div className="absolute contents left-[-0.38px] top-0" data-name="LuckyDraw_AllQian">
       <LuckyDrawQian />
@@ -651,18 +651,18 @@ function LuckyDrawAllQian() {
   );
 }
 
-function Frame() {
+function Frame({ motionDetected = false }: { motionDetected?: boolean }) {
   return (
-    <div className="absolute h-[165px] left-0 overflow-clip top-0 w-[216px]">
-      <LuckyDrawAllQian />
+    <div className={clsx("absolute h-[165px] left-0 overflow-clip top-0 w-[216px]", motionDetected && "animate-qian-wobble")}>
+      <LuckyDrawAllQian motionDetected={motionDetected} />
     </div>
   );
 }
 
-function LuckyDrawAllQian1() {
+function LuckyDrawAllQian1({ motionDetected = false }: { motionDetected?: boolean }) {
   return (
     <div className="[grid-area:1_/_1] content-stretch flex h-[165px] items-center ml-[23.55px] mt-0 relative" data-name="LuckyDraw_AllQian">
-      <Frame />
+      <Frame motionDetected={motionDetected} />
     </div>
   );
 }
@@ -756,19 +756,19 @@ function LuckyDrawBucket() {
   );
 }
 
-function LuckyDrawAllElementsSvg() {
+function LuckyDrawAllElementsSvg({ motionDetected = false }: { motionDetected?: boolean }) {
   return (
     <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-name="LuckyDraw_AllElements_svg">
-      <LuckyDrawAllQian1 />
+      <LuckyDrawAllQian1 motionDetected={motionDetected} />
       <LuckyDrawBucket />
     </div>
   );
 }
 
-function LuckyDrawAllElementsSvg1({ isWeChatLayout = false }: { isWeChatLayout?: boolean } = {}) {
+function LuckyDrawAllElementsSvg1({ isWeChatLayout = false, motionDetected = false }: { isWeChatLayout?: boolean; motionDetected?: boolean } = {}) {
   return (
     <div className="absolute content-stretch flex items-center left-[69.45px] top-[315px]" data-name="LuckyDraw_AllElements_svg" style={isWeChatLayout ? { transform: 'translateY(-75px)' } : undefined}>
-      <LuckyDrawAllElementsSvg />
+      <LuckyDrawAllElementsSvg motionDetected={motionDetected} />
     </div>
   );
 }
@@ -834,7 +834,7 @@ function LuckyDrawCloudSvg1() {
 
 function LuckyDrawCloudElement1({ isWeChatLayout = false }: { isWeChatLayout?: boolean } = {}) {
   return (
-    <div className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] translate-y-[-50%]" data-name="LuckyDraw_CloudElement_2" style={isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px)' } : undefined}>
+    <div className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] translate-y-[-50%]" data-name="LuckyDraw_CloudElement_2" style={isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px) translateY(25px)' } : { transform: 'translateY(-50%) translateY(25px)' }}>
       <LuckyDrawCloudSvg1 />
     </div>
   );
@@ -898,7 +898,7 @@ function ShakeCta({ activated = false }: { activated?: boolean }) {
 
 function ShakeCta1({ activated = false }: { activated?: boolean }) {
   return (
-    <div className="bg-[#E64338] content-stretch flex items-center justify-center relative rounded-[100px] shrink-0 size-[128px]" data-name="shake_CTA">
+    <div className="bg-[#e2571e] content-stretch flex items-center justify-center relative rounded-[100px] shrink-0 size-[128px] transition-[filter] duration-200 hover:brightness-110 active:brightness-95" data-name="shake_CTA">
       <div aria-hidden="true" className="absolute border-[5px] border-solid border-white inset-[-5px] pointer-events-none rounded-[105px]" />
       <ShakeCta activated={activated} />
     </div>
@@ -990,11 +990,11 @@ type LuckyDrawDefaultProps = {
 };
 
 export default function LuckyDrawDefault({ onShakeClick, isWeChatLayout = false, motionDetected = false }: LuckyDrawDefaultProps = {}) {
-  const wechatShiftWith50 = isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px)' as const } : undefined;
+  const wechatShiftWith50 = isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px) translateY(25px)' as const } : { transform: 'translateY(-50%) translateY(25px)' as const };
   return (
     <div className="relative min-h-dvh min-h-full w-full block" data-name="LuckyDraw_Default">
       <LuckyDrawBackgroundGroup isWeChatLayout={isWeChatLayout} useCoinsFalling />
-      <LuckyDrawAllElementsSvg1 isWeChatLayout={isWeChatLayout} />
+      <LuckyDrawAllElementsSvg1 isWeChatLayout={isWeChatLayout} motionDetected={motionDetected} />
       <LuckyDrawStars isWeChatLayout={isWeChatLayout} />
       <div className="absolute flex items-center justify-center left-[-20.2%] right-[62.84%] top-[calc(50%+388.5px)] translate-y-[-50%]" style={wechatShiftWith50}>
         <div className="flex-none h-[117px] rotate-[180deg] scale-y-[-100%] w-[225.407px]">

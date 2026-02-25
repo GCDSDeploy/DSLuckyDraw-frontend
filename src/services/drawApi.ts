@@ -3,7 +3,16 @@
  * Used by shake/click draw trigger. Console logs response for verification.
  */
 
-import { API_BASE } from '../config/api';
+import { getApiBase } from '../config/api';
+
+/** 开发环境可读错误，便于排查 CORS/网络 */
+function toDrawErrorMessage(err: unknown, url: string): string {
+  const msg = err instanceof Error ? err.message : String(err);
+  if (import.meta.env.DEV) {
+    return `抽签请求失败: ${msg}\n请求: ${url}`;
+  }
+  return '抽签请求失败，请检查网络或稍后重试';
+}
 
 export type DrawSuccess = {
   id: string;
@@ -23,18 +32,27 @@ export type DrawResponse = DrawSuccess | DrawOutOfStock;
  * Logs response to console for verification.
  */
 export async function drawLucky(): Promise<DrawResponse> {
-  const url = `${API_BASE}/api/draw`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({}),
-  });
+  const base = getApiBase();
+  const url = `${base}/api/draw`;
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+  } catch (err) {
+    const friendly = toDrawErrorMessage(err, url);
+    console.warn('[drawApi]', err);
+    throw new Error(friendly);
+  }
   const data = (await res.json()) as DrawResponse;
   console.log('draw result:', data);
   if (!res.ok) {
-    throw new Error(data && typeof data === 'object' && 'error' in data
+    const msg = data && typeof data === 'object' && 'error' in data
       ? (data as { error?: string }).error ?? `HTTP ${res.status}`
-      : `HTTP ${res.status}`);
+      : `HTTP ${res.status}`;
+    throw new Error(toDrawErrorMessage(new Error(msg), url));
   }
   return data;
 }

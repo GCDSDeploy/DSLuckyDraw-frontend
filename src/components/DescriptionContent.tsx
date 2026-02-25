@@ -4,6 +4,7 @@
 // 迁移目标：Cursor 项目 @/components/DescriptionContent.tsx
 // =================================================
 
+import { useState, useEffect } from 'react';
 import svgPaths from '../imports/svg-ohexhocdnt';
 import type { LuckyDrawResult } from '../types';
 import img9MasksTr from "@/assets/4b2c92b387b9afd0c7fd0f4679506347da0975a4.png";
@@ -73,9 +74,20 @@ export default function DescriptionContent({ result, className = '' }: Descripti
   
   // 检查是否为特殊布局（ID: 11 空签）
   const isSpecialLayout = result.isSpecialLayout || false;
+  const isResult11 = result.id === 11;
+  
+  // 结果 11：卡片高度减少 30%（468 * 0.7 ≈ 328px）
+  const contentHeight = isResult11 ? 328 : 468;
+  const svgHeight = isResult11 ? 327 : 466.5;
   
   // 特殊布局：红色字更大字号
   const rewardFontSize = isSpecialLayout ? 'text-[22px]' : 'text-[16px]';
+
+  // 微信 WebView：底部白条压缩内容时，将整块容器上移 30px，仅改视觉偏移
+  const [isWeChatWebView, setIsWeChatWebView] = useState(false);
+  useEffect(() => {
+    setIsWeChatWebView(typeof navigator !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent));
+  }, []);
   
   // 统一的布局模型：使用 flex 布局确保插图与标题的相对位置固定
   // 插图容器自适应内容尺寸（正常签文：300px × 210px，空签：340px × 286px）
@@ -84,9 +96,13 @@ export default function DescriptionContent({ result, className = '' }: Descripti
   return (
     <>
       {/* ===== 插图+标题组合容器 ===== */}
-      {/* 使用 flex 布局，插图下半部分覆盖在白色卡片上 */}
-      <div 
-        className="absolute left-1/2 top-[130px] translate-x-[-50%] flex flex-col items-center z-10"
+      {/* 微信 WebView 下上移 30px，避免被底部白条压缩；Safari/Chrome 不变 */}
+      <div
+        className={`absolute left-1/2 translate-x-[-50%] flex flex-col items-center z-10 mb-[10px] overflow-auto ${isWeChatWebView ? '-translate-y-[30px]' : ''}`}
+        style={{
+          top: 'calc(50px + env(safe-area-inset-top, 0px))',
+          maxHeight: 'calc(100vh - 50px - 10px - 48px - 15px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px))',
+        }}
         data-name="Description_Illustration_Title_Container"
       >
         {/* ===== 顶部插图 ===== */}
@@ -114,12 +130,16 @@ export default function DescriptionContent({ result, className = '' }: Descripti
         {/* ===== 白色卡片内容区域 ===== */}
         {/* 向上移动以实现插图下半部分覆盖效果，z-index 较低，向下位移16px为签ID留出空间 */}
         <div 
-          className={`relative content-stretch flex items-start justify-center overflow-clip p-[18px] w-[338px] h-[468px] -mt-[104px] z-10 ${className}`}
+          className={`relative content-stretch flex items-start justify-center overflow-clip p-[18px] w-[338px] -mt-[104px] z-10 ${className}`}
+          style={{ height: contentHeight }}
           data-name="Description_Content"
           data-result-id={result.id}
         >
         {/* 白色卡片背景 */}
-        <div className="absolute h-[466.5px] left-[calc(50%-0.5px)] top-[calc(50%+0.25px)] translate-x-[-50%] translate-y-[-50%] w-[337px]">
+        <div 
+          className="absolute left-[calc(50%-0.5px)] top-[calc(50%+0.25px)] translate-x-[-50%] translate-y-[-50%] w-[337px]"
+          style={{ height: svgHeight }}
+        >
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 337 467">
             <g id="Group 8">
               <path d={svgPaths.p2e0742c0} fill="var(--fill-0, white)" id="Rectangle 3" />
@@ -127,15 +147,15 @@ export default function DescriptionContent({ result, className = '' }: Descripti
           </svg>
         </div>
         
-        {/* 内容区域 */}
-        <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0 w-[294px] pt-[90px]">
-          {/* 签文名称和解释 */}
-          <div className="content-stretch flex flex-col gap-[6px] items-center leading-[0] relative shrink-0 w-full">
-            {/* 签文名称区域（特殊布局不显示） */}
+        {/* 内容区域 - 结果 11：底部块（Happy New Year! + DS 祝福）距容器底 20px */}
+        <div className={`content-stretch flex flex-col gap-1 p-0 items-center relative shrink-0 w-[294px] ${isResult11 ? 'h-full pt-[24px]' : 'pt-[90px]'}`}>
+          {/* 签文名称和解释（奖项行所在块） */}
+          <div className={`content-stretch flex flex-col gap-0 items-center leading-[0] relative shrink-0 w-full ${isResult11 ? 'flex-1 min-h-0' : ''}`}>
+            {/* 签文名称区域（特殊布局不显示）- 整体上移 20px */}
             {!isSpecialLayout && (
-              <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0">
-                {/* 签文名称 + 装饰元素 */}
-                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0 w-[294px]">
+              <div className="content-stretch flex flex-col gap-0 items-center relative shrink-0 p-0 -mt-5">
+                {/* 签文名称 + 装饰元素 - 与 flex 容器间 padding 0 */}
+                <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0 w-[294px] p-0">
                   {/* 绿色下划线（数据驱动颜色） */}
                   <div 
                     className="[grid-area:1_/_1] h-[15px] ml-[50px] mt-[85px] w-[208px]" 
@@ -160,29 +180,54 @@ export default function DescriptionContent({ result, className = '' }: Descripti
               </div>
             )}
             
-            {/* 签文解释 */}
-            <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0 w-[294px]">
-              <div className="[grid-area:1_/_1] flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[1.25] ml-[147px] mt-[45px] relative text-[#323232] text-[24px] text-center translate-x-[-50%] translate-y-[-50%] w-[294px]">
-                {/* 将签文解释按行分割显示 */}
-                {descriptionText.split('\n').map((line, index) => (
-                  <p key={index} className={index < descriptionText.split('\n').length - 1 ? 'mb-0' : ''}>{line}</p>
-                ))}
+            {/* 签文解释（新年祝福语）- 最多 3 行，最后一句保持一行 */}
+            <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid place-items-start relative shrink-0 w-[294px] p-0">
+              <div
+                className="[grid-area:1_/_1] font-['ZiHun151',sans-serif] leading-[1.25] ml-[147px] mt-[45px] relative text-[#323232] text-[24px] text-center translate-x-[-50%] translate-y-[-50%] w-[294px]"
+                data-name="Description_Blessing_Text"
+              >
+                {descriptionText.split('\n').map((line, index) => {
+                  const isLast = index === descriptionText.split('\n').length - 1;
+                  return (
+                    <p key={index} className={isLast ? 'mb-0 whitespace-nowrap' : 'mb-0'}>{line}</p>
+                  );
+                })}
               </div>
             </div>
             
-            {/* 奖励信息 */}
-            <div className={`flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[normal] not-italic relative shrink-0 text-[#a1150c] ${rewardFontSize} text-center text-nowrap`}>
-              <p className="mb-0">{rewardTitle}</p>
-              <p>{rewardDescription}</p>
-            </div>
+            {/* 奖励信息（非结果 11 时在此处渲染） */}
+            {!isResult11 && (
+              <div className={`flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[normal] not-italic relative shrink-0 text-[#a1150c] ${rewardFontSize} text-center text-nowrap`}>
+                <p className="mb-0">{rewardTitle}</p>
+                <p>{rewardDescription}</p>
+              </div>
+            )}
           </div>
           
-          {/* 底部品牌信息 */}
-          <div className="content-stretch flex flex-col gap-[8px] items-center relative shrink-0">
-            {/* Logo + 品牌名称 */}
-            <div className="content-stretch flex gap-[8px] items-center justify-center relative shrink-0">
+          {/* 结果 11：Happy New Year! + DS 祝福 距容器底 20px */}
+          {isResult11 ? (
+            <div className="mt-auto shrink-0 pb-5 flex flex-col gap-1 items-center w-full">
+              <div className={`flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[normal] not-italic relative shrink-0 text-[#a1150c] ${rewardFontSize} text-center text-nowrap`}>
+                <p className="mb-0">{rewardTitle}</p>
+                <p>{rewardDescription}</p>
+              </div>
+              <div className="content-stretch flex flex-col gap-0 items-center relative shrink-0 p-0 mt-5">
+                <div className="content-stretch flex gap-1 items-center justify-center relative shrink-0" style={{ letterSpacing: '0.5px' }}>
+                  <LogoDsComponents />
+                  <p className="font-['Arial:Regular','Noto_Sans_JP:Regular','Noto_Sans_SC:Regular',sans-serif] leading-[normal] relative shrink-0 text-[#323232] text-[14px] text-nowrap" style={{ fontVariationSettings: "'wght' 400", letterSpacing: '0.5px' }}>
+                    {brandText}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+          <>
+          {/* 底部品牌信息（DS Logo + 服务行）- 与第三行奖励区间距 20px，logo 与文案字间距统一 */}
+          <div className="content-stretch flex flex-col gap-0 items-center relative shrink-0 p-0 mt-5" data-name="Description_Logo_Services">
+            {/* DS Logo + 服务文案，字间距 0.5px 与设计一致 */}
+            <div className="content-stretch flex gap-1 items-center justify-center relative shrink-0" style={{ letterSpacing: '0.5px' }}>
               <LogoDsComponents />
-              <p className="font-['Arial:Regular','Noto_Sans_JP:Regular','Noto_Sans_SC:Regular',sans-serif] leading-[normal] relative shrink-0 text-[#323232] text-[14px] text-nowrap" style={{ fontVariationSettings: "'wght' 400" }}>
+              <p className="font-['Arial:Regular','Noto_Sans_JP:Regular','Noto_Sans_SC:Regular',sans-serif] leading-[normal] relative shrink-0 text-[#323232] text-[14px] text-nowrap" style={{ fontVariationSettings: "'wght' 400", letterSpacing: '0.5px' }}>
                 {brandText}
               </p>
             </div>
@@ -196,10 +241,15 @@ export default function DescriptionContent({ result, className = '' }: Descripti
               </div>
             )}
           </div>
+          </>
+          )}
         </div>
         
-        {/* 分隔线 */}
-        <div className="absolute left-[calc(50%+0.5px)] top-[340px] translate-x-[-50%] w-[251px]">
+        {/* 分隔线 + ID 行 - 第二：与 DS 行 margin 4px；ID 元素居中 */}
+        <div 
+          className="absolute left-1/2 -translate-x-1/2 w-[251px] mt-1 flex flex-col items-center"
+          style={isResult11 ? { bottom: '72px' } : { top: '340px' }}
+        >
           <div className="absolute h-0 inset-[-0.5px_0]">
             <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 251 1">
               <path d="M0 0.5H251" id="Vector 29" stroke="var(--stroke-0, #F0F0F0)" />
@@ -207,7 +257,7 @@ export default function DescriptionContent({ result, className = '' }: Descripti
           </div>
           {/* 签ID显示 */}
           {result.signId && (
-            <p className="text-[9px] text-[#D4D4D4] text-center mt-[8px] relative">{result.signId}</p>
+            <p className="text-[9px] text-[#D4D4D4] text-center mt-[8px] relative w-full">{result.signId}</p>
           )}
         </div>
         </div>

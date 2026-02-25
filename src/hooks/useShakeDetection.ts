@@ -1,18 +1,22 @@
 // ===== 摇动检测 Hook =====
 // 功能：检测设备摇动事件（陀螺仪/加速度计）
-// 用途：LuckyDrawShake 页面触发摇动动画
-// 迁移：可直接迁移到 Cursor 项目
+// 用途：LuckyDrawDefault/Shake 页面触发摇动与跳转
+// 注意：iOS 要求「安全上下文」才会触发 DeviceMotionEvent：
+//       - 支持：HTTPS、http://localhost、http://127.0.0.1
+//       - 不支持：http://192.168.x.x（Wi‑Fi 局域网 IP）等非安全上下文，权限会静默拒绝
 // =================================================
 
 import { useEffect, useRef, useState } from 'react';
 
 interface UseShakeDetectionOptions {
-  /** 摇动阈值（默认 15，值越大需要摇动越剧烈） */
+  /** 摇动阈值（默认 18，值越大需摇动越剧烈，可减少误触） */
   threshold?: number;
   /** 摇动触发回调函数 */
   onShake?: () => void;
   /** 是否启用摇动检测（默认 true） */
   enabled?: boolean;
+  /** 为 true 时不在 mount 时自动请求权限/开监听，需在用户手势内调用返回的 startMotionListener（iOS 13+ 必须） */
+  requestPermissionOnFirstGesture?: boolean;
 }
 
 /**
@@ -38,13 +42,16 @@ interface UseShakeDetectionOptions {
  * ```
  */
 export function useShakeDetection({
-  threshold = 15,
+  threshold = 18,
   onShake,
   enabled = true,
+  requestPermissionOnFirstGesture = false,
 }: UseShakeDetectionOptions = {}) {
   const [isShaking, setIsShaking] = useState(false);
   const lastShakeTime = useRef<number>(0);
   const lastAcceleration = useRef<{ x: number; y: number; z: number } | null>(null);
+  const cleanupMotionRef = useRef<(() => void) | null>(null);
+  const listenerStartedRef = useRef(false);
 
   // 手动触发摇动（用于按钮点击）
   const triggerShake = () => {
@@ -58,96 +65,116 @@ export function useShakeDetection({
     }
   };
 
-  useEffect(() => {
-    if (!enabled || !onShake) {
-      return;
-    }
-
-    // 检查浏览器是否支持 DeviceMotionEvent
-    if (typeof window === 'undefined' || !window.DeviceMotionEvent) {
-      console.warn('[useShakeDetection] DeviceMotionEvent 不支持，将仅支持手动触发');
-      return;
-    }
-
-    // 请求权限（iOS 13+ 需要；且必须在用户手势内调用，否则无效）
-    if (typeof (DeviceMotionEvent as any).requestPermission === 'function') {
-      console.log('[useShakeDetection] iOS: calling DeviceMotionEvent.requestPermission()');
-      (DeviceMotionEvent as any)
-        .requestPermission()
-        .then((permission: string) => {
-          console.log('[useShakeDetection] iOS permission result:', permission);
-          if (permission === 'granted') {
-            console.log('[useShakeDetection] iOS permission granted, setting up motion listener');
-            setupMotionListener();
-          } else {
-            console.warn('[useShakeDetection] 设备运动权限被拒绝');
+  function setupMotionListener() {
+    if (typeof window === 'undefined' || !onShake) return () => {};
+    const handleMotion = (event: DeviceMotionEvent) => {
+      const acceleration = event.accelerationIncludingGravity;
+      if (!acceleration) return;
+      const { x, y, z } = acceleration;
+      const now = Date.now();
+      if (now - lastShakeTime.current < 500) return;
+      if (lastAcceleration.current) {
+        const deltaX = Math.abs((x ?? 0) - lastAcceleration.current.x);
+        const deltaY = Math.abs((y ?? 0) - lastAcceleration.current.y);
+        const deltaZ = Math.abs((z ?? 0) - lastAcceleration.current.z);
+        const totalDelta = deltaX + deltaY + deltaZ;
+        if (totalDelta > threshold) {
+          lastShakeTime.current = now;
+          setIsShaking(true);
+          onShake();
+          if (typeof console !== 'undefined' && console.log) {
+            console.log('[useShakeDetection] motion detected, totalDelta:', totalDelta, 'threshold:', threshold);
           }
-        })
-        .catch((error: Error) => {
-          console.error('[useShakeDetection] 请求设备运动权限失败:', error);
-        });
-    } else {
-      console.log('[useShakeDetection] No requestPermission (non-iOS), setting up listener directly');
-      setupMotionListener();
-    }
-
-    function setupMotionListener() {
-      const handleMotion = (event: DeviceMotionEvent) => {
-        const acceleration = event.accelerationIncludingGravity;
-        
-        if (!acceleration) {
-          return;
+          setTimeout(() => setIsShaking(false), 600);
         }
-
-        const { x, y, z } = acceleration;
-        const now = Date.now();
-
-        // 防止过于频繁触发（至少间隔 500ms）
-        if (now - lastShakeTime.current < 500) {
-          return;
-        }
-
-        if (lastAcceleration.current) {
-          // 计算加速度变化
-          const deltaX = Math.abs(x - lastAcceleration.current.x);
-          const deltaY = Math.abs(y - lastAcceleration.current.y);
-          const deltaZ = Math.abs(z - lastAcceleration.current.z);
-          const totalDelta = deltaX + deltaY + deltaZ;
-
-          // 如果加速度变化超过阈值，触发摇动
-          if (totalDelta > threshold) {
-            console.log('MOTION DETECTED');
-            lastShakeTime.current = now;
-            setIsShaking(true);
-            onShake();
-            // 0.6 秒后重置状态
-            setTimeout(() => {
-              setIsShaking(false);
-            }, 600);
-          }
-        }
-
-        lastAcceleration.current = { x: x || 0, y: y || 0, z: z || 0 };
-      };
-
+      }
+      lastAcceleration.current = { x: x ?? 0, y: y ?? 0, z: z ?? 0 };
+    };
+    try {
       window.addEventListener('devicemotion', handleMotion);
-
       return () => {
         window.removeEventListener('devicemotion', handleMotion);
       };
+    } catch {
+      return () => {};
     }
+  }
 
-    // 清理函数
+  /** 仅注册 devicemotion 监听，不请求权限（用于在页面内已同步调用 requestPermission 后） */
+  const addMotionListenerOnly = () => {
+    if (listenerStartedRef.current || !enabled || !onShake) return;
+    if (typeof window === 'undefined' || !window.DeviceMotionEvent) return;
+    try {
+      listenerStartedRef.current = true;
+      cleanupMotionRef.current = setupMotionListener();
+    } catch {
+      listenerStartedRef.current = false;
+    }
+  };
+
+  /** 在用户手势内调用（如点击 CTA 时），用于请求 iOS 权限并启动陀螺仪监听 */
+  const startMotionListener = () => {
+    if (listenerStartedRef.current || !enabled || !onShake) return;
+    if (typeof window === 'undefined' || !window.DeviceMotionEvent) return;
+    try {
+      if (typeof (DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
+        (DeviceMotionEvent as unknown as { requestPermission: () => Promise<string> })
+          .requestPermission()
+          .then((permission: string) => {
+            if (permission === 'granted') {
+              listenerStartedRef.current = true;
+              cleanupMotionRef.current = setupMotionListener();
+            }
+          })
+          .catch(() => {});
+      } else {
+        listenerStartedRef.current = true;
+        cleanupMotionRef.current = setupMotionListener();
+      }
+    } catch {
+      // 非支持环境不报错
+    }
+  };
+
+  useEffect(() => {
+    if (requestPermissionOnFirstGesture || !enabled || !onShake) return;
+    if (typeof window === 'undefined' || !window.DeviceMotionEvent) {
+      return;
+    }
+    try {
+      if (typeof (DeviceMotionEvent as unknown as { requestPermission?: () => Promise<string> }).requestPermission === 'function') {
+        (DeviceMotionEvent as unknown as { requestPermission: () => Promise<string> })
+          .requestPermission()
+          .then((permission: string) => {
+            if (permission === 'granted') {
+              cleanupMotionRef.current = setupMotionListener();
+            }
+          })
+          .catch(() => {});
+      } else {
+        cleanupMotionRef.current = setupMotionListener();
+      }
+    } catch {
+      // 非支持环境不报错
+    }
     return () => {
-      // setupMotionListener 返回的清理函数会在组件卸载时执行
+      cleanupMotionRef.current?.();
+      cleanupMotionRef.current = null;
     };
-  }, [enabled, onShake, threshold]);
+  }, [enabled, onShake, threshold, requestPermissionOnFirstGesture]);
+
+  useEffect(() => {
+    return () => {
+      cleanupMotionRef.current?.();
+      cleanupMotionRef.current = null;
+    };
+  }, []);
 
   return {
-    /** 当前是否正在摇动 */
     isShaking,
-    /** 手动触发摇动（用于按钮点击） */
     triggerShake,
+    startMotionListener: requestPermissionOnFirstGesture ? startMotionListener : undefined,
+    addMotionListenerOnly: requestPermissionOnFirstGesture ? addMotionListenerOnly : undefined,
   };
 }
 

@@ -1,5 +1,14 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  plugins: [
+    // 安全区：iOS 刘海 / Android 虚拟按键，供 Description 等页面使用
+    function ({ addUtilities }) {
+      addUtilities({
+        '.pt-safe': { paddingTop: 'env(safe-area-inset-top, 0px)' },
+        '.pb-safe': { paddingBottom: 'env(safe-area-inset-bottom, 0px)' },
+      });
+    },
+  ],
   theme: {
     extend: {
       fontFamily: {
@@ -61,6 +70,14 @@ export default {
           '25%, 75%': { transform: 'scale(1.25)' },
           '50%': { transform: 'scale(1.3)' },
         },
+        // Shake 页最高幸运签“摇签上升”：从第一排 Y 升至最高位，带轻微 X 摆动
+        'qian-rise': {
+          '0%': { transform: 'translateY(82px) translateX(0)' },
+          '25%': { transform: 'translateY(58px) translateX(2px)' },
+          '50%': { transform: 'translateY(28px) translateX(-2px)' },
+          '75%': { transform: 'translateY(8px) translateX(1px)' },
+          '100%': { transform: 'translateY(0) translateX(0)' },
+        },
       },
       animation: {
         // 按钮抖动动画（持续 0.6 秒）
@@ -75,6 +92,8 @@ export default {
         'star-twinkle': 'star-twinkle 1.2s ease-in-out infinite',
         // 星星 4 个 Vector 精确缩放（应用于 g#LuckyDraw_Stars_svg 内各 path）
         'star-twinkle-scale-only': 'star-twinkle-scale-only 1.2s ease-in-out infinite',
+        // Shake 页最高签上升动画（0.9s ease-out，保持最终位）
+        'qian-rise': 'qian-rise 0.9s cubic-bezier(0.25, 1, 0.5, 1) forwards',
       },
     },
   },

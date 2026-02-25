@@ -12,8 +12,19 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
+    },
+  },
+  // Enable LAN access for mobile testing (phone: http://<电脑局域网IP>:5173)
+  // If phone can't open: 1) Restart dev server 2) Check IP with ifconfig/ipconfig 3) Same WiFi 4) Firewall allow 5173
+  server: {
+    host: true,
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
     },
   },
 })

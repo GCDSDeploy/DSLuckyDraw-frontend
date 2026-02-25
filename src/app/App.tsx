@@ -8,8 +8,14 @@
  * 路由配置：/src/router/index.tsx
  */
 
+import { Toaster } from 'sonner';
 import { Router } from '../router';
 
 export default function App() {
-  return <Router />;
+  return (
+    <>
+      <Router />
+      <Toaster position="top-center" richColors closeButton />
+    </>
+  );
 }

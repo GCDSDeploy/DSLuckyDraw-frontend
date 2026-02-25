@@ -17,7 +17,7 @@ function useCoinFallConfigs(): CoinFallConfig[] {
 
 function LuckyDrawCloudSvg2({ children }: React.PropsWithChildren<{}>) {
   return (
-    <div className="h-[117px] relative shrink-0 w-[225.407px] -translate-y-[30px]" style={{ animation: 'floatX_cloudBig 10s ease-in-out infinite', transformOrigin: 'center center' }}>
+    <div className="h-[117px] relative shrink-0 w-[225.407px] -translate-y-[5px]" style={{ animation: 'floatX_cloudBig 7.5s ease-in-out infinite', transformOrigin: 'center center' }}>
       <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 226 117">
         <g id="LuckyDraw_cloud_svg">{children}</g>
       </svg>
@@ -614,7 +614,10 @@ function QianSvg5() {
 
 function LuckyDrawQian5() {
   return (
-    <div className="absolute content-stretch flex items-center left-[45.87px] top-[2.6px]" data-name="LuckyDraw_Qian">
+    <div
+      className="absolute content-stretch flex items-center left-[45.87px] top-[2.6px] animate-qian-rise"
+      data-name="LuckyDraw_Qian_top"
+    >
       <QianSvg5 />
     </div>
   );
@@ -669,7 +672,7 @@ function Frame() {
 
 function LuckyDrawShakeQian() {
   return (
-    <div className="[grid-area:1_/_1] content-stretch flex items-center ml-[22.55px] mt-0 relative" data-name="LuckyDraw_ShakeQian">
+    <div className="[grid-area:1_/_1] content-stretch flex items-center ml-[22.55px] mt-0 relative -translate-y-[30px]" data-name="LuckyDraw_ShakeQian">
       <Frame />
     </div>
   );
@@ -758,7 +761,7 @@ function DrawBucket() {
 
 function LuckyDrawBucket() {
   return (
-    <div className="[grid-area:1_/_1] content-stretch flex items-center ml-0 mt-[164.74px] relative" data-name="LuckyDraw_Bucket">
+    <div className="[grid-area:1_/_1] content-stretch flex items-center ml-0 mt-[164.74px] relative -translate-y-[10px]" data-name="LuckyDraw_Bucket">
       <DrawBucket />
     </div>
   );
@@ -855,7 +858,7 @@ function LuckyDrawCloudSvg1() {
 
 function LuckyDrawCloudElement1({ isWeChatLayout = false }: { isWeChatLayout?: boolean } = {}) {
   return (
-    <div className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] translate-y-[-50%]" data-name="LuckyDraw_CloudElement_2" style={isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px)' } : undefined}>
+    <div className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] translate-y-[-50%]" data-name="LuckyDraw_CloudElement_2" style={isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px) translateY(25px)' } : { transform: 'translateY(-50%) translateY(25px)' }}>
       <LuckyDrawCloudSvg1 />
     </div>
   );
@@ -913,7 +916,7 @@ function ShakeCta() {
 
 function ShakeCta1() {
   return (
-    <div className="bg-[#e2571e] content-stretch flex items-center justify-center relative rounded-[100px] shrink-0 size-[128px]" data-name="shake_CTA">
+    <div className="bg-[#e2571e] content-stretch flex items-center justify-center relative rounded-[100px] shrink-0 size-[128px] transition-[filter] duration-200 hover:brightness-110 active:brightness-95" data-name="shake_CTA">
       <div aria-hidden="true" className="absolute border-[5px] border-solid border-white inset-[-5px] pointer-events-none rounded-[105px]" />
       <ShakeCta />
     </div>
@@ -928,14 +931,23 @@ type ShakeCta2Props = {
   /** 是否正在摇动（用于触发动画） */
   isShaking?: boolean;
   isWeChatLayout?: boolean;
+  /** 禁用 CTA：不响应点击，仅保留视觉效果（pointer-events: none） */
+  ctaDisabled?: boolean;
 };
 
-function ShakeCta2({ onClick, isShaking = false, isWeChatLayout = false }: ShakeCta2Props = {}) {
+function ShakeCta2({ onClick, isShaking = false, isWeChatLayout = false, ctaDisabled = false }: ShakeCta2Props = {}) {
   return (
-    <div 
-      onClick={onClick}
+    <div
+      onClick={ctaDisabled ? undefined : onClick}
+      role={ctaDisabled ? 'presentation' : 'button'}
+      aria-disabled={ctaDisabled}
       data-action="shake-to-result"
-      className={`absolute content-stretch flex items-center justify-center left-[132px] top-[582px] p-[5px] cursor-pointer ${isShaking ? 'animate-button-shake' : ''}`}
+      className={clsx(
+        'absolute content-stretch flex items-center justify-center left-[132px] top-[582px] p-[5px]',
+        !ctaDisabled && 'cursor-pointer',
+        ctaDisabled && 'pointer-events-none',
+        isShaking && 'animate-button-shake'
+      )}
       data-name="Shake_CTA"
       style={isWeChatLayout ? { transform: 'translateY(-75px)' } : undefined}
     >
@@ -963,10 +975,12 @@ type LuckyDrawShakeProps = {
   isShaking?: boolean;
   /** 微信 WebView 下底部导航栏约 85px 遮挡，上移 75px 的紧凑布局 */
   isWeChatLayout?: boolean;
+  /** 禁用 CTA：不响应点击，仅作过渡页展示 */
+  ctaDisabled?: boolean;
 };
 
-export default function LuckyDrawShake({ onShakeClick, isShaking = false, isWeChatLayout = false }: LuckyDrawShakeProps) {
-  const wechatShiftWith50 = isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px)' as const } : undefined;
+export default function LuckyDrawShake({ onShakeClick, isShaking = false, isWeChatLayout = false, ctaDisabled = false }: LuckyDrawShakeProps) {
+  const wechatShiftWith50 = isWeChatLayout ? { transform: 'translateY(-50%) translateY(-75px) translateY(25px)' as const } : { transform: 'translateY(-50%) translateY(25px)' as const };
   return (
     <div className="relative size-full" data-name="LuckyDraw_Shake" style={{ background: 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)' }}>
       <LuckyDrawBackgroundGroup isWeChatLayout={isWeChatLayout} useCoinsFalling />
@@ -979,8 +993,8 @@ export default function LuckyDrawShake({ onShakeClick, isShaking = false, isWeCh
         </div>
       </div>
       <LuckyDrawCloudElement1 isWeChatLayout={isWeChatLayout} />
-      {/* 摇一摇按钮 - 添加抖动动画 */}
-      <ShakeCta2 onClick={onShakeClick} isShaking={isShaking} isWeChatLayout={isWeChatLayout} />
+      {/* 摇一摇按钮 - 过渡页时禁用点击，仅保留动画 */}
+      <ShakeCta2 onClick={onShakeClick} isShaking={isShaking} isWeChatLayout={isWeChatLayout} ctaDisabled={ctaDisabled} />
       <LuckyDrawDescription />
     </div>
   );

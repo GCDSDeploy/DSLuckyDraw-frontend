@@ -80,6 +80,30 @@ export default function LuckyDrawResultPage(
     setCurrentResult(luckyDrawResults[0]);
   }, [props.result, props.resultId]);
 
+  // 微信 WebView：底部白条压缩内容时，仅在此环境下做视觉上移
+  const [isWeChatWebView, setIsWeChatWebView] = useState(false);
+  // CTA 动态偏移：使 CTA 底部与可视区底部（导航栏上方）保持 30px，不做固定累加
+  const [wechatCtaTranslateY, setWechatCtaTranslateY] = useState<number>(0);
+  const CTA_LAYOUT_TOP = 710;
+  const CTA_APPROX_HEIGHT = 96; // min-h-64 + py-4*2
+
+  useEffect(() => {
+    const inWeChat = typeof navigator !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent);
+    setIsWeChatWebView(inWeChat);
+    if (!inWeChat) return;
+    const updateWeChatLayout = () => {
+      const inner = window.innerHeight;
+      // 先设为 0：若 Figma 量出约 30px，说明 innerHeight 的“底”比底部栏顶高约 30px，0 即正确
+      const CTA_GAP_FROM_BOTTOM = 0;
+      const targetCtaBottom = inner - CTA_GAP_FROM_BOTTOM;
+      const layoutCtaBottom = CTA_LAYOUT_TOP + CTA_APPROX_HEIGHT;
+      setWechatCtaTranslateY(targetCtaBottom - layoutCtaBottom);
+    };
+    updateWeChatLayout();
+    window.addEventListener('resize', updateWeChatLayout);
+    return () => window.removeEventListener('resize', updateWeChatLayout);
+  }, []);
+
   // ===== 事件处理 =====
   const handleButtonClick = () => {
     if (!currentResult) return;
@@ -117,20 +141,27 @@ export default function LuckyDrawResultPage(
       <LuckyDrawBackgroundGroup />
 
       {/* 签筒 */}
-      <LuckyDrawBucket />
+      <LuckyDrawBucket isWeChatWebView={isWeChatWebView} />
 
-      {/* "立即解签"按钮 */}
-      <LuckyDrawButton onClick={handleButtonClick} />
+      {/* "立即解签"按钮：微信下仅用动态 translateY 保证底部 30px 安全距离 */}
+      <LuckyDrawButton
+        onClick={handleButtonClick}
+        isWeChatWebView={isWeChatWebView}
+        wechatCtaTranslateY={wechatCtaTranslateY}
+      />
 
-      {/* 云朵装饰元素 1（左下角，旋转；z-20 在 bucket 之上） */}
-      <div className="absolute flex items-center justify-center left-[-20.2%] right-[62.84%] top-[calc(50%+388.5px)] translate-y-[-50%] z-20">
+      {/* 云朵装饰元素 1（左下角）- 非微信保持原样，微信时上移 20px */}
+      <div
+        className="absolute flex items-center justify-center left-[-20.2%] right-[62.84%] top-[calc(50%+388.5px)] z-20"
+        style={isWeChatWebView ? { transform: 'translateY(-50%) translateY(-20px)' } : { transform: 'translateY(-50%)' }}
+      >
         <div className="flex-none h-[117px] rotate-[180deg] scale-y-[-100%] w-[225.407px]">
           <LuckyDrawCloudElement />
         </div>
       </div>
 
       {/* 云朵装饰元素 2（右下角；z-20 在 bucket 之上） */}
-      <LuckyDrawCloudElement1 />
+      <LuckyDrawCloudElement1 isWeChatWebView={isWeChatWebView} />
 
       {/* 点击手势提示 */}
       <div
@@ -148,15 +179,14 @@ export default function LuckyDrawResultPage(
       </div>
 
       {/* 顶部描述文字（动态显示等级）*/}
-      <LuckyDrawHeaderDescription level={currentResult.level} />
+      <LuckyDrawHeaderDescription level={currentResult.level} isWeChatWebView={isWeChatWebView} />
 
       {/* 装饰性彩带元素 */}
       <LuckyDrawRibbons />
 
       {/* ===== 数据驱动的签条组件 ===== */}
-      {/* 替换原有的硬编码 LuckyDrawJiedahuanxi 组件 */}
       <div
-        className="absolute h-[454px] left-[calc(50%+0.5px)] top-[184px] translate-x-[-50%] w-[116px] z-[1] -translate-y-[10px]"
+        className={`absolute h-[454px] left-[calc(50%+0.5px)] top-[184px] translate-x-[-50%] w-[116px] z-[1] ${isWeChatWebView ? '-translate-y-[60px]' : '-translate-y-[10px]'}`}
         data-name="LuckyDraw_FortuneSlip_Container"
       >
         <FortuneSlip result={currentResult} />
@@ -244,10 +274,11 @@ function LuckyDrawCloudSvg1() {
   );
 }
 
-function LuckyDrawCloudElement1() {
+function LuckyDrawCloudElement1({ isWeChatWebView }: { isWeChatWebView?: boolean }) {
   return (
     <div
-      className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] translate-y-[-50%] z-20"
+      className="absolute content-stretch flex flex-col items-start left-[58.02%] right-[-15.37%] top-[calc(50%+388.5px)] z-20"
+      style={{ transform: isWeChatWebView ? 'translateY(-50%) translateY(-20px)' : 'translateY(-50%)' }}
       data-name="LuckyDraw_CloudElement_2"
     >
       <LuckyDrawCloudSvg1 />
@@ -339,14 +370,17 @@ function LandingHoverGesture() {
 
 // ===== 顶部描述文字组件（动态显示等级）=====
 
-function LuckyDrawHeaderDescription({ level }: { level?: string }) {
+function LuckyDrawHeaderDescription({ level, isWeChatWebView }: { level?: string; isWeChatWebView?: boolean }) {
   return (
     <div
-      className="absolute content-stretch flex h-[72px] items-center justify-center left-[84px] top-[74px] w-[224px]"
+      className={clsx(
+        "absolute content-stretch flex h-[72px] items-center justify-center left-[84px] top-[74px] w-[224px]",
+        isWeChatWebView && "-mt-[50px]"
+      )}
       data-name="LuckyDraw_HeaderDescription"
     >
       <div className="font-['ZiHun151',sans-serif] leading-[1.2] not-italic relative shrink-0 text-[#fff9ee] text-[0px] text-center text-shadow-[0px_0.742px_0.742px_rgba(169,99,99,0.25)]">
-        <p className="mb-0 text-[32px]">摇<span className="text-[#fff9ee]">签成功！</span></p>
+        <p className="mb-0 text-[32px] text-center">摇签成功！</p>
         <p className="text-[28px]">请查收你的幸运签</p>
       </div>
     </div>
@@ -354,17 +388,28 @@ function LuckyDrawHeaderDescription({ level }: { level?: string }) {
 }
 
 // ===== "立即解签"按钮组件 =====
+// 微信 WebView：仅用动态 translateY，使 CTA 底部与导航栏上方保持 30px，无固定累加
 
 function LuckyDrawButton({
   onClick,
+  isWeChatWebView,
+  wechatCtaTranslateY = 0,
 }: {
   onClick?: () => void;
+  isWeChatWebView?: boolean;
+  wechatCtaTranslateY?: number;
 }) {
+  const weChatStyle =
+    isWeChatWebView
+      ? { transform: `translateY(${wechatCtaTranslateY}px)` }
+      : undefined;
+
   return (
     <div
       onClick={onClick}
       data-action="proceed-to-description"
-      className="absolute flex items-center justify-center left-[calc(50%+0.5px)] top-[710px] translate-x-[-50%] z-20 cursor-pointer min-w-[200px] min-h-[64px] py-4 px-6"
+      className="absolute flex items-center justify-center left-[calc(50%+0.5px)] top-[710px] translate-x-[-50%] z-30 cursor-pointer min-w-[200px] min-h-[64px] py-4 px-6"
+      style={weChatStyle}
       data-name="LuckyDraw_Button"
       role="button"
       aria-label="立即解签，进入签文解读"
@@ -653,11 +698,14 @@ function DrawBucket() {
   );
 }
 
-// 签筒容器组件（保持原有位置，添加 overflow-hidden；上移 100px，z-index 在签条容器之上）
-function LuckyDrawBucket() {
+// 签筒容器组件（非微信 -80px，微信 -130px，与 Header/Slip 统一再上移 20px）
+function LuckyDrawBucket({ isWeChatWebView }: { isWeChatWebView?: boolean }) {
   return (
     <div
-      className="absolute content-stretch flex items-center left-[75px] top-[675px] -translate-y-[80px] overflow-hidden z-10"
+      className={clsx(
+        "absolute content-stretch flex items-center left-[75px] top-[675px] overflow-hidden z-10",
+        isWeChatWebView ? "-translate-y-[130px]" : "-translate-y-[80px]"
+      )}
       data-name="LuckyDraw_Bucket"
     >
       <DrawBucket />

@@ -56,7 +56,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(126.59% 130.38% at 25.83% -9.21%, #F947B9 0%, #F970BF 44.23%, #FB7633 100%)",
     underlineColor: "#ff9a47",
-    description: "新年问事，\n多半求一个\"明白\"。 \n事一旦看懂，路自然顺了。 ",
+    description: "新年问事，\n多半求一个\"明白\"。 \n事一旦看懂，路自然顺。 ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
       description: "\"PPT设计VIP通道 - 无排队直通车\""

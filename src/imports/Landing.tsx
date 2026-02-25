@@ -2401,7 +2401,7 @@ function LandingDescription({ isReturnLayout = false }: { isReturnLayout?: boole
       data-name="Landing_Description"
     >
       <div className="font-['ZiHun151',sans-serif] leading-[1.6] not-italic relative shrink-0 text-[#fff9ee] text-[0px] text-center text-nowrap">
-        <p className="mb-0 text-[24px]">摇好签，拿好礼</p>
+        <p className="mb-0 text-[24px]">开工！摇签拿好礼</p>
         <p className="text-[14px]">DS祝你新年行好运+</p>
       </div>
     </div>
@@ -2409,39 +2409,29 @@ function LandingDescription({ isReturnLayout = false }: { isReturnLayout?: boole
 }
 
 function TitleYear() {
-  return (
-    <div className="absolute content-stretch flex items-center justify-center left-[105px] top-[9px] w-[170px]" data-name="Title_Year">
-      <div className="flex h-[126.907px] items-center justify-center relative shrink-0 w-[169.917px]" style={{ "--transform-inner-width": "151.90625", "--transform-inner-height": "99.890625" } as React.CSSProperties}>
-        <div className="flex-none rotate-[349.277deg]">
-          <div className="flex flex-col font-['ShangShouCangShu',sans-serif] justify-center leading-[0] not-italic relative text-[83.25px] text-center text-nowrap text-shadow-[0px_2.144px_2.144px_rgba(169,99,99,0.25)] tracking-[-8.325px] text-[#FFE7AB]">
-            <p className="leading-[1.2]">2026</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  return null;
 }
 
 function TitleTheme() {
+  return null;
+}
+
+function LandingHeaderSvg() {
   return (
-    <div className="absolute contents font-['ShangShouCangShu',sans-serif] leading-[0] left-0 not-italic text-[#fff9ee] text-center text-nowrap top-0" data-name="Title_Theme">
-      <div className="absolute flex flex-col justify-center left-[72px] text-[162.819px] text-shadow-[0px_4.194px_4.194px_rgba(169,99,99,0.25)] top-[97.5px] translate-x-[-50%] translate-y-[-50%]">
-        <p className="leading-[1.2] text-nowrap">好</p>
-      </div>
-      <div className="absolute flex flex-col justify-center left-[159.88px] text-[126.757px] text-shadow-[0px_3.265px_3.265px_rgba(169,99,99,0.25)] top-[153.91px] translate-x-[-50%] translate-y-[-50%]">
-        <p className="leading-[1.2] text-nowrap">兆</p>
-      </div>
-      <div className="absolute flex flex-col justify-center left-[250.77px] text-[126.757px] text-shadow-[0px_3.265px_3.265px_rgba(169,99,99,0.25)] top-[132.58px] translate-x-[-50%] translate-y-[-50%]">
-        <p className="leading-[1.2] text-nowrap">头</p>
-      </div>
-    </div>
+    <img
+      src="/assets/Landing_Header.svg"
+      alt="2026 好兆头"
+      className="block w-full h-auto object-contain object-center"
+      width={331.98}
+      height={174.35}
+    />
   );
 }
 
 function LandingHeader({ isReturnLayout = false }: { isReturnLayout?: boolean }) {
   return (
     <div
-      className="w-[307px] text-left content-stretch flex flex-col gap-[9.275px] items-start pb-[13.912px] px-[29.68px]"
+      className="w-[368px] text-left content-stretch flex flex-col gap-[11px] items-start pb-[17px] px-[36px]"
       style={{
         position: 'absolute',
         top: isReturnLayout ? '-22px' : '13px',
@@ -2451,8 +2441,7 @@ function LandingHeader({ isReturnLayout = false }: { isReturnLayout?: boolean })
       }}
       data-name="Landing_Header"
     >
-      <TitleYear />
-      <TitleTheme />
+      <LandingHeaderSvg />
     </div>
   );
 }
