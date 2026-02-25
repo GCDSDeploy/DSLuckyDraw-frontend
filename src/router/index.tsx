@@ -11,6 +11,7 @@
  * - /draw/shake : 抽签摇动动画页面
  * - /result/:id : 抽签结果页面
  * - /description/:id : 签文详情页面
+ * - /gift-pool : 奖池一览页面
  */
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
@@ -19,6 +20,7 @@ import LuckyDrawDefault from '../pages/LuckyDrawDefault';
 import LuckyDrawShake from '../pages/LuckyDrawShake';
 import LuckyDrawResult from '../pages/LuckyDrawResult';
 import LuckyDrawDescription from '../pages/LuckyDrawDescription';
+import GiftPool from '../pages/GiftPool';
 
 /**
  * 路由配置
@@ -47,6 +49,10 @@ export const router = createBrowserRouter(
   {
     path: '/description/:id',
     element: <LuckyDrawDescription />,
+  },
+  {
+    path: '/gift-pool',
+    element: <GiftPool />,
   },
   // 404 页面（可选）
   {

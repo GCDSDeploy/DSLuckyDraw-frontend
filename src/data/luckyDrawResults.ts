@@ -39,7 +39,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据
     backgroundColor: "radial-gradient(103.42% 104.98% at 31.55% -3.35%, #F947B9 0%, #F970BF 44%, #FB7633 100%)",
-    underlineColor: "#128f57",
+    underlineColor: "#F957BB",
     description: "各抒其见，终归同向。\n共识落定，皆大欢喜。\n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -55,7 +55,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(126.59% 130.38% at 25.83% -9.21%, #F947B9 0%, #F970BF 44.23%, #FB7633 100%)",
-    underlineColor: "#ff9a47",
+    underlineColor: "#F95ABB",
     description: "新年问事，\n多半求一个\"明白\"。 \n事一旦看懂，路自然顺。 ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -72,7 +72,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(180deg, #6399F3 0%, #9050E4 50%, #ED67D8 100%)",
-    underlineColor: "#ff9a47",
+    underlineColor: "#FF795D",
     description: "关键之处，\n往往只差一笔。\n一笔到位，万事顺行。",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -89,7 +89,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(-179.577deg, #36ED8E 0%, #26B4D0 45%, #2691FE 100%)",
-    underlineColor: "#cc2f3a",
+    underlineColor: "#00F185",
     description: "久思未破，灵光乍现。\n一点火花，照亮全局。\n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -106,7 +106,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(180deg, #F79B73 0%, #F341A5 41%, #FAE3DA 100%)",
-    underlineColor: "#cc2f3a",
+    underlineColor: "#FF795D",
     description: "当数据被看懂， \n判断自然尽在掌握。 \n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -123,7 +123,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(152.36% 199.42% at -31.68% -16.84%, #EFA3E1 0%, #1C92F9 70%, #36ED8E 88%)",
-    underlineColor: "#5282ea",
+    underlineColor: "#00F185",
     description: "层次分明，路径清晰。 \n表达所至，稳步推进。 \n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -140,7 +140,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(102.54% 115.58% at 30.53% -1.88%, #F947B9 0%, #F970BF 44%, #FB7633 100%)",
-    underlineColor: "#f7b635",
+    underlineColor: "#FF00D5",
     description: "方向清晰，创意对位。 \n第一版，便是一稿过。 \n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -157,7 +157,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(180deg, #F79B73 0%, #F341A5 41%, #FAE3DA 100%)",
-    underlineColor: "#128f57",
+    underlineColor: "#FF795D",
     description: "当一句话说中人心， \n回应往往是拍案叫绝。\n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -174,7 +174,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(324.31% 225.47% at -44.91% -11.68%, #EFA3E1 0%, #1C92F9 70%, #36ED8E 88%)",
-    underlineColor: "#f7b635",
+    underlineColor: "#0091FF",
     description: "在对的时点， \n用对的方式验证想法。\n ",
     reward: {
       title: "Happy New Year! 查收奖励👇",
@@ -191,11 +191,11 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(180deg, #6399F3 0%, #9050E4 50%, #ED67D8 100%)",
-    underlineColor: "#5282ea",
+    underlineColor: "#FF00D5",
     description: "不是一时之声，\n而是一盘之局 。\n内容成势，大展鸿图。",
     reward: {
       title: "Happy New Year! 查收奖励👇",
-      description: "\"个人专属表情包1个\""
+      description: "\"新年减免-价值 $80 设计服务\""
     },
     illustration: imgDescriptionIllustrationDazhanhongtu,
     brandText: "Design Studios 内容策略",

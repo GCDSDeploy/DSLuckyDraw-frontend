@@ -144,9 +144,9 @@ type CallToActionTextProps = {
 
 function CallToActionText({ text, additionalClassNames = "" }: CallToActionTextProps) {
   return (
-    <div className={clsx("[grid-area:1_/_1] flex items-center justify-center relative", additionalClassNames)}>
-      <div className="flex-none h-[23px] rotate-[345.33deg] w-[59px]">
-        <p className="font-['ZiHun151',sans-serif] leading-[normal] not-italic relative text-[19.447px] text-nowrap text-white">{text}</p>
+    <div className={clsx("flex items-center justify-center relative", additionalClassNames)}>
+      <div className="flex-none h-[23px] rotate-[345.33deg] w-max min-w-0 flex items-center justify-center">
+        <p className="font-['ZiHun151',sans-serif] leading-[normal] not-italic relative text-[19.447px] text-nowrap text-white text-center">{text}</p>
       </div>
     </div>
   );
@@ -866,16 +866,15 @@ function LuckyDrawCloudElement1({ isWeChatLayout = false }: { isWeChatLayout?: b
 
 function CallToAction() {
   return (
-    <div className="grid-cols-[max-content] grid-rows-[max-content] inline-grid leading-[0] place-items-start relative shrink-0" data-name="Call-to-action">
-      <CallToActionText text="摇一摇" additionalClassNames="ml-0 mt-0" />
-      <CallToActionText text="得好礼" additionalClassNames="ml-[7.88px] mt-[27.45px]" />
+    <div className="flex flex-col items-center justify-center leading-[0] relative shrink-0" data-name="Call-to-action">
+      <CallToActionText text="出签中…" additionalClassNames="" />
     </div>
   );
 }
 
 function CallToAction1() {
   return (
-    <div className="[grid-area:1_/_1] content-stretch flex flex-col items-center ml-0 mt-[30.77px] relative w-[70.78px]" data-name="Call-to-action">
+    <div className="[grid-area:1_/_1] content-stretch flex flex-col items-center justify-center ml-0 mt-[30.77px] relative w-[70.78px]" data-name="Call-to-action">
       <CallToAction />
     </div>
   );

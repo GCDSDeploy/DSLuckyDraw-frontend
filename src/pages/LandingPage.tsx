@@ -45,10 +45,9 @@ export default function LandingPage() {
     navigate('/draw');
   };
 
-  // 点击"活动规则"链接（占位，后续可扩展为弹窗或规则页面）
+  // 点击"活动规则"链接，跳转到奖池一览页
   const handleRulesClick = () => {
-    console.log('[Landing] Rules clicked - TODO: Open rules modal or navigate to /rules');
-    // TODO: 实现规则说明弹窗或跳转到规则页面
+    navigate('/gift-pool');
   };
   return (
     // 全屏居中容器 - 确保在各种设备上正确显示
@@ -61,7 +60,14 @@ export default function LandingPage() {
         - overflow-hidden: 防止内容溢出
         - relative: 为内部绝对定位元素提供定位上下文
       */}
-      <div className="relative w-full max-w-[430px] mx-auto overflow-hidden min-h-dvh min-h-screen">
+      <div
+        className="relative w-full max-w-[430px] mx-auto overflow-hidden min-h-dvh min-h-screen box-border"
+        style={{
+          paddingBottom: IS_WECHAT_WEBVIEW
+            ? 'max(50px, env(safe-area-inset-bottom, 0px))'
+            : 'max(15px, env(safe-area-inset-bottom, 0px))',
+        }}
+      >
         {/* Figma 生成的 Landing 组件 - 传递事件处理函数 */}
         <Landing 
           onStartClick={handleStartClick}

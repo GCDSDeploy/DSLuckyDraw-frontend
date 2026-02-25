@@ -2311,11 +2311,19 @@ function DsLogo() {
   );
 }
 
-function CtaRules() {
+function CtaRules({ onClick }: { onClick?: () => void }) {
   return (
-    <div className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-[56px]" data-name="CTA_Rules">
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick?.(); } }}
+      className="content-stretch flex flex-col gap-[4px] items-start relative shrink-0 w-[56px] cursor-pointer"
+      data-name="CTA_Rules"
+      data-action="rules"
+    >
       <div className="flex flex-col font-['ZiHun151',sans-serif] justify-center leading-[0] min-w-full not-italic relative shrink-0 text-[14px] text-center text-shadow-[0px_0.742px_0.742px_rgba(169,99,99,0.25)] text-white w-[min-content]">
-        <p className="leading-[1.2] whitespace-nowrap">活动规则</p>
+        <p className="leading-[1.2] whitespace-nowrap">奖池一览</p>
       </div>
       <div className="h-0 relative shrink-0 w-[56px]">
         <div className="absolute inset-[-1px_0]">
@@ -2328,11 +2336,15 @@ function CtaRules() {
   );
 }
 
-function LandingBottomArea() {
+function LandingBottomArea({ onRulesClick }: { onRulesClick?: () => void }) {
   return (
-    <div className="absolute content-stretch flex items-end justify-between bottom-0 left-1/2 -translate-x-1/2 w-[352px]" style={{ paddingBottom: 'max(20px, env(safe-area-inset-bottom, 0px))' }} data-name="Landing_BottomArea">
+    <div
+      className="absolute content-stretch flex items-end justify-between bottom-0 left-1/2 -translate-x-1/2 w-[352px]"
+      style={{ paddingBottom: 'max(15px, env(safe-area-inset-bottom, 0px))' }}
+      data-name="Landing_BottomArea"
+    >
       <DsLogo />
-      <CtaRules />
+      <CtaRules onClick={onRulesClick} />
     </div>
   );
 }
@@ -2472,7 +2484,7 @@ function LandingCloudSvg1() {
 
 function LandingCloudElement() {
   return (
-    <Wrapper1 additionalClassNames="mt-[400px] w-[134px] ml-[25px]">
+    <Wrapper1 additionalClassNames="mt-[440px] w-[134px] ml-[25px]">
       <LandingCloudSvg1 />
     </Wrapper1>
   );
@@ -2652,7 +2664,7 @@ export default function Landing({ onStartClick, onRulesClick, isReturnLayout = f
   return (
     <div className="relative block min-h-dvh min-h-full w-full text-center" data-name="Landing">
       <LandingBackgroundPattern />
-      <LandingBottomArea />
+      <LandingBottomArea onRulesClick={onRulesClick} />
       <LandingTryCta onClick={onStartClick} isReturnLayout={isReturnLayout} />
       <div
         className="absolute z-20 flex h-[84.797px] items-center justify-center left-[201.27px] w-[76.452px]"

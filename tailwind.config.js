@@ -16,6 +16,8 @@ export default {
         zihun: ['ZiHun151', 'sans-serif'],
         // No.77-上手仓书法体（用于装饰性文字）
         shangshou: ['ShangShouCangShu', 'serif'],
+        // 苹方（系统字体，用于奖励等正文）
+        pingfang: ['PingFang SC', 'PingFang TC', 'Helvetica Neue', 'sans-serif'],
       },
       keyframes: {
         // 摇一摇按钮抖动动画（旋转 + 缩放）

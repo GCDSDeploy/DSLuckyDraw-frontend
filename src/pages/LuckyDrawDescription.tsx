@@ -146,15 +146,47 @@ export default function LuckyDrawDescription() {
     // TODO: 实现分享功能（使用 Web Share API）
   };
   
-  // 点击"奖池一览"按钮（占位，后续实现）
+  // 点击"奖池一览"按钮，跳转到奖池一览页
   const handleGiftPoolClick = () => {
-    console.log('[Placeholder] Navigate to gift pool page');
-    // TODO: 实现奖池页面跳转
+    navigate('/gift-pool');
   };
-  
-  // 页面统一使用新背景渐变（与 LuckyDrawDefault / LuckyDrawResult 一致）
-  const backgroundStyle = 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)';
-  
+
+  // Description 1,2,3,5：Pattern #FFFFFF；4,6,7,8,9,10：专用渐变 + Pattern 颜色（Figma 设计）
+  const DEFAULT_BG = 'linear-gradient(-180deg, #F95279 10%, #F55243 100%)';
+  const DESCRIPTION_PAGE_BG: Record<number, { gradient: string; patternColor: string }> = {
+    1: { gradient: DEFAULT_BG, patternColor: '#FFFFFF' },
+    2: { gradient: DEFAULT_BG, patternColor: '#FFFFFF' },
+    3: { gradient: DEFAULT_BG, patternColor: '#FFFFFF' },
+    5: { gradient: DEFAULT_BG, patternColor: '#FFFFFF' },
+    4: {
+      gradient: 'linear-gradient(135deg, rgba(239,163,225,1) 0%, rgba(186,159,231,1) 17.5%, rgba(134,155,237,1) 35%, rgba(81,150,243,1) 52.5%, rgba(54,148,246,1) 61.25%, rgba(28,146,249,1) 70%, rgba(41,192,196,1) 79%, rgba(54,237,142,1) 88%)',
+      patternColor: '#DCF9E3',
+    },
+    6: {
+      gradient: 'linear-gradient(135deg, rgba(239,163,225,1) 0%, rgba(186,159,231,1) 17.5%, rgba(134,155,237,1) 35%, rgba(81,150,243,1) 52.5%, rgba(54,148,246,1) 61.25%, rgba(28,146,249,1) 70%, rgba(41,192,196,1) 79%, rgba(54,237,142,1) 88%)',
+      patternColor: '#DCF9E3',
+    },
+    7: {
+      gradient: 'linear-gradient(180deg, rgba(249,71,185,1) 0%, rgba(249,112,191,1) 44%, rgba(250,114,156,1) 58%, rgba(250,115,121,1) 72%, rgba(251,117,86,1) 86%, rgba(251,118,51,1) 100%)',
+      patternColor: '#FFFFFF',
+    },
+    8: {
+      gradient: 'linear-gradient(180deg, rgba(249,71,185,1) 0%, rgba(249,112,191,1) 44%, rgba(250,114,156,1) 58%, rgba(250,115,121,1) 72%, rgba(251,117,86,1) 86%, rgba(251,118,51,1) 100%)',
+      patternColor: '#FFFFFF',
+    },
+    9: {
+      gradient: 'linear-gradient(180.423deg, rgb(54, 237, 142) 0.88437%, rgb(38, 180, 208) 46.997%, rgb(38, 145, 254) 103.94%)',
+      patternColor: '#DCF9E3',
+    },
+    10: {
+      gradient: 'linear-gradient(180deg, #6399f3 0%, #9050e4 49.857%, #ed67d8 100%)',
+      patternColor: '#FFFFFF',
+    },
+  };
+  const pageBg = currentResult ? DESCRIPTION_PAGE_BG[currentResult.id] : null;
+  const backgroundStyle = pageBg ? pageBg.gradient : DEFAULT_BG;
+  const patternTintColor = pageBg ? pageBg.patternColor : null;
+
   // 如果数据未加载，显示加载状态
   if (!currentResult) {
     return (
@@ -188,8 +220,8 @@ export default function LuckyDrawDescription() {
           style={{ background: backgroundStyle }}
           data-name="LuckyDraw_Description"
         >
-          {/* 背景装饰层 */}
-          <LandingBackgroundLayerGreen />
+          {/* 背景装饰层（4,6,7,8,9,10 使用指定 Pattern 颜色） */}
+          <LandingBackgroundLayerGreen patternTintColor={patternTintColor} />
           
           {/* 数据驱动的签文详情内容 */}
           <DescriptionContent result={currentResult} />
@@ -418,15 +450,30 @@ import imgLandingBackgroundLayerGreen from "@/assets/09245eba98b5559b1bc319006b1
 import imgCroodsArrowDown from "@/assets/f91f9545390252a6611c7f7d585ca3efe3a8716a.png";
 
 // ===== 绿色背景组件（复用 Landing 页）=====
+// patternTintColor：4,6,7,8,9,10 页使用指定 HEX，用 PNG 做 mask 显示纯色图案
 
-function LandingBackgroundLayerGreen() {
+function LandingBackgroundLayerGreen({ patternTintColor = null }: { patternTintColor?: string | null }) {
+  if (patternTintColor) {
+    return (
+      <div
+        className="absolute inset-0 w-full h-full pointer-events-none"
+        data-name="Landing_Background_LayerGreen"
+        style={{
+          backgroundColor: patternTintColor,
+          maskImage: `url(${imgLandingBackgroundLayerGreen})`,
+          maskSize: 'cover',
+          maskRepeat: 'no-repeat',
+          maskPosition: 'center',
+          WebkitMaskImage: `url(${imgLandingBackgroundLayerGreen})`,
+          WebkitMaskSize: 'cover',
+          WebkitMaskRepeat: 'no-repeat',
+          WebkitMaskPosition: 'center',
+        }}
+      />
+    );
+  }
   return (
     <div className="absolute inset-0 w-full h-full" data-name="Landing_Background_LayerGreen">
-      {/* @cursor-migrate: 
-        - 将图片资源移动到 @/assets/images/landing-background-green.png
-        - 使用 next/image 组件优化加载
-        - 添加 priority 属性提升首屏加载速度
-      */}
       <img alt="" className="absolute inset-0 w-full h-full object-cover pointer-events-none" src={imgLandingBackgroundLayerGreen} />
     </div>
   );
