@@ -145,6 +145,11 @@ export default function LuckyDrawDescription() {
     console.log('[Placeholder] Share with result:', currentResult);
     // TODO: 实现分享功能（使用 Web Share API）
   };
+
+  /** 再试试手气：跳转到 Draw 默认页，第二次抽签由用户在默认页摇一摇/点击 CTA 时发起 */
+  const handleTryAgainClick = () => {
+    navigate('/draw');
+  };
   
   // 点击"奖池一览"按钮，跳转到奖池一览页
   const handleGiftPoolClick = () => {
@@ -232,7 +237,7 @@ export default function LuckyDrawDescription() {
             isSaving={isSaving}
             onDownloadClick={handleDownloadClick}
             onShareClick={handleShareClick}
-            onTryAgainClick={() => navigate('/draw')}
+            onTryAgainClick={handleTryAgainClick}
           />
           
           {/* 返回主页按钮 */}

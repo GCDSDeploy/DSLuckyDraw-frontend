@@ -128,14 +128,8 @@ export default function LuckyDrawDefault() {
     }, NAVIGATE_TO_SHAKE_DELAY_MS);
 
     const guestId = getOrCreateGuestId();
+    // 每次手势只请求一次：首抽 20% 中签 / 80% 未中签；未中签时由结果页「再试试手气」触发第二轮（100% 中签）
     drawLucky(guestId)
-      .then((data) => {
-        // 第 1 次未中签时自动发起第 2 次（后端保证第 2 次必中）
-        if (!data.won) {
-          return drawLucky(guestId);
-        }
-        return data;
-      })
       .then((data) => {
         const result =
           data.won && data.tier
