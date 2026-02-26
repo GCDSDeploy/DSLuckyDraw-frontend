@@ -10,7 +10,7 @@ export { SignType, SignLevel } from './sign';
 /**
  * 签文等级枚举
  */
-export type LuckyDrawLevel = '上上签' | '上签' | '特签' | '空签';
+export type LuckyDrawLevel = '阳光普照' | '上上签' | '上签' | '特签' | '空签';
 
 /**
  * 奖励信息数据结构

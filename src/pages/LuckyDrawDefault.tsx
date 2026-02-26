@@ -8,16 +8,16 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import LuckyDrawDefaultComponent from '../imports/LuckyDrawDefault';
 import { useShakeDetection } from '../hooks/useShakeDetection';
-import { drawLucky, isOutOfStock, drawResponseToSign } from '../services/drawApi';
-import { mapSignToLuckyDrawResult } from '../utils/signMapper';
+import { drawLucky } from '../services/drawApi';
+import { getLuckyDrawResultByTier } from '../data/tierSignMapping';
+import { getLuckyDrawResultById } from '../data/luckyDrawResults';
+import { getOrCreateGuestId } from '../utils/guestId';
 
 const IS_WECHAT_WEBVIEW = typeof navigator !== 'undefined' && /MicroMessenger/i.test(navigator.userAgent);
 /** 点击/摇动触发后，延迟多久跳转 Shake 页（加快到 0.5 秒） */
 const NAVIGATE_TO_SHAKE_DELAY_MS = 500;
 /** 本地模拟摇一摇：URL 带 ?simulateMotion=1 时在 dev 下仅设 motionDetected，用于验证动画与 CTA 状态（不触发音效/震动） */
 const SIMULATE_MOTION_DELAY_MS = 500;
-
-const OUT_OF_STOCK_MSG = '今日签已抽完，请明日再来';
 
 /** 摇一摇音效路径（可放置 public/shake.mp3 或同源 URL） */
 const SHAKE_SOUND_URL = '/shake.mp3';
@@ -127,18 +127,25 @@ export default function LuckyDrawDefault() {
       }
     }, NAVIGATE_TO_SHAKE_DELAY_MS);
 
-    drawLucky()
+    const guestId = getOrCreateGuestId();
+    drawLucky(guestId)
       .then((data) => {
-        if (isOutOfStock(data)) {
-          alert(OUT_OF_STOCK_MSG);
-          return;
+        // 第 1 次未中签时自动发起第 2 次（后端保证第 2 次必中）
+        if (!data.won) {
+          return drawLucky(guestId);
         }
-        const sign = drawResponseToSign(data);
-        const result = mapSignToLuckyDrawResult(sign);
-        resultIdRef.current = result.id;
-        console.log(`[抽签结果] Sign: ${sign.id} → Result: ${result.title} (${result.level}, id: ${result.id})`);
+        return data;
+      })
+      .then((data) => {
+        const result =
+          data.won && data.tier
+            ? getLuckyDrawResultByTier(data.tier)
+            : getLuckyDrawResultById(11);
+        const final = result ?? getLuckyDrawResultById(11)!;
+        resultIdRef.current = final.id;
+        console.log(`[抽签结果] won=${data.won} tier=${data.tier} drawRound=${data.drawRound} → Result id=${final.id} ${final.title}`);
         if (pendingNavigateToShakeRef.current) {
-          navigate('/draw/shake', { state: { resultId: result.id } });
+          navigate('/draw/shake', { state: { resultId: final.id } });
         }
       })
       .catch((err) => {

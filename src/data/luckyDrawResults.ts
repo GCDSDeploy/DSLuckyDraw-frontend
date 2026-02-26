@@ -136,7 +136,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     id: 7,
     number: "66",
     title: "一稿过",
-    level: "上签",
+    level: "上上签",
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(102.54% 115.58% at 30.53% -1.88%, #F947B9 0%, #F970BF 44%, #FB7633 100%)",
@@ -153,7 +153,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     id: 8,
     number: "66",
     title: "拍案叫绝",
-    level: "上签",
+    level: "上上签",
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "linear-gradient(180deg, #F79B73 0%, #F341A5 41%, #FAE3DA 100%)",
@@ -170,7 +170,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
     id: 9,
     number: "2026",
     title: "天时地利",
-    level: "特签",
+    level: "阳光普照",
     isRetry: false,
     // Description 页面数据（✅ 从 Figma 设计稿提取）
     backgroundColor: "radial-gradient(324.31% 225.47% at -44.91% -11.68%, #EFA3E1 0%, #1C92F9 70%, #36ED8E 88%)",
@@ -205,7 +205,7 @@ export const luckyDrawResults: LuckyDrawResult[] = [
   {
     id: 11,
     number: "2026",
-    title: "新年快乐", // 主标题
+    title: "开工大吉", // 主标题（未中签展示）
     level: "空签",
     isRetry: true,
     subtitle: "新年快乐", // 副标题（与标题相同）
